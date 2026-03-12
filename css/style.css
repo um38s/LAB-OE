@@ -470,18 +470,6 @@ section {
     width: 100%;
     height: 100%;
     background-color: #000000; /* 순수 검정 바탕 */
-    background-image: linear-gradient(
-        -45deg,
-        transparent 49%,
-        rgba(255, 255, 255, 0.04) 49%, /* 더 없고 없은 선 */
-        rgba(255, 255, 255, 0.04) 50%,
-        transparent 50%,
-        transparent 99%,
-        rgba(255, 255, 255, 0.04) 99%,
-        rgba(255, 255, 255, 0.04) 100%
-    );
-    background-size: 50px 50px; /* 심세한 패턴 간격 */
-    animation: slideModalBg 20s linear infinite; /* 더 느리게 */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -489,15 +477,6 @@ section {
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease;
-}
-
-@keyframes slideModalBg {
-    0% {
-        background-position: 0 0;
-    }
-    100% {
-        background-position: -50px 50px; /* 사선 왼쪽 하단 이동 효과 */
-    }
 }
 
 .modal.show {
