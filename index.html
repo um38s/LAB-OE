@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KIM YOUNG TAE | Media Artist</title>
+
+    <!-- Fonts: Outfit (Display/English) & Pretendard (Korean/Body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" as="style" crossorigin
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- GSAP for animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+    <!-- Lenis for smooth scrolling -->
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+
+    <!-- Three.js for WebGL Background -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+</head>
+
+<body>
+    <!-- Three.js Canvas Container -->
+    <div id="canvas-container"></div>
+
+    <main id="smooth-wrapper">
+        <div id="smooth-content">
+
+            <!-- Hero Section -->
+            <section class="hero">
+                <div class="hero-content">
+                    <h1 class="hero-title">LAB OE<br><span class="hero-title-name">KIM YOUNG TAE</span></h1>
+                    <p class="hero-subtitle">media artist & exhibition designer</p>
+                </div>
+                <div class="scroll-indicator">
+                    <span>SCROLL</span>
+                    <div class="line"></div>
+                </div>
+            </section>
+
+            <!-- Design Philosophy Section -->
+            <section class="about section-philosophy">
+                <h2 class="section-title">DESIGN PHILOSOPHY</h2>
+                <div class="philosophy-content" style="font-size: 1.5rem; font-weight: 300; line-height: 1.8; word-break: keep-all; padding: 5vh 0 2rem; max-width: 1100px;">
+                    <h3 style="font-size: 2.5rem; font-weight: 700; color: var(--point-color); margin-bottom: 2rem; letter-spacing: -0.02em;">익숙함에 낯선 경험</h3>
+                    <p style="margin-bottom: 1.5rem;">일상적 무심한 요소에 시각적 인상을 심어 익숙하지만 낯선 느낌을 경험하게 만듭니다.</p>
+                    <p style="color: var(--text-secondary); margin-bottom: 3.5rem;">[사물] + [빛]을 주제로 비물리적 조형 요소와 미디어 매체를 결합한 콘텐츠 작품을 진행하고 있는<br><span style="display:inline-block; margin-top: 0.3rem;">미디어 아트 그룹<span class="highlight" style="color: var(--point-color); font-weight: 700; display: inline-block; padding: 0 0.6em;">LAB OE</span>입니다.</span></p>
+                    
+                    <div class="philosophy-diagram">
+                        <div class="diagram-group">
+                            <div class="circle circle-white">공간</div>
+                            <div class="cross">✕</div>
+                            <div class="circle circle-white">다양성</div>
+                        </div>
+                        <div class="diagram-group">
+                            <div class="circle circle-white">感興<br><span>inspiration</span></div>
+                            <div class="circle circle-white">審美性<br><span>aesthetic</span></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Media Art Exhibitions Section -->
+            <section class="about" style="margin-top: 5rem;">
+                <h2 class="section-title">MEDIA ART EXHIBITIONS</h2>
+                <ul class="exhibition-list">
+                    <li><a href="#" data-img="img/IMG_001.PNG" data-youtube="https://youtu.be/IWG60YMttEs"><span class="year">2025</span><span class="details">‘2025 서울라이트 광화문’ 세종 파빌리온 초정작가 및 전시<br>서울, 한국</span><img src="img/IMG_001.PNG" alt="Exhibition Image" class="hover-img"></a></li>
+                    <li><a href="#" data-img="img/m2_001.png"><span class="year">2025</span><span class="details">‘2025 수원화성 미디어아트’ 전시 참여작가 및 전시<br>수원, 한국</span><img src="img/m2_001.png" alt="Exhibition Image" class="hover-img"></a></li>
+                    <li><a href="#" data-img="img/m3_002.png" data-youtube="https://youtu.be/-45vd8GlQbo"><span class="year">2025</span><span class="details">VIDO SUMMER : 장면의 잔상들 전시<br>서울, 한국</span><img src="img/m3_002.png" alt="Exhibition Image" class="hover-img"></a></li>
+                    <li><a href="#" data-img="img/m4_001.png" data-youtube="https://www.youtube.com/watch?v=3V4NV4mrNOo"><span class="year">2025</span><span class="details">‘2025 아뜰리에 광화 봄’ 전시 참여작가 및 전시<br>서울, 한국</span><img src="img/m4_001.png" alt="Exhibition Image" class="hover-img"></a></li>
+                    <li><a href="#" data-img="img/m5_001.png"><span class="year">2025</span><span class="details">‘2025 화성행궁 야간개장 &lt;달빛화담, 花谈&gt;’, 미디어아트 전시<br>수원, 한국</span><img src="img/m5_001.png" alt="Exhibition Image" class="hover-img"></a></li>
+                    <li><a href="#" data-img="img/m6_001.png" data-youtube="https://youtu.be/niTaHsrvXlQ"><span class="year">2024</span><span class="details">‘2024 국가유산 미디어아트 수원화성’ 참여작가 및 전시<br>수원, 한국</span><img src="img/m6_001.png" alt="Exhibition Image" class="hover-img"></a></li>
+                    <li><a href="#" data-img="img/m7_001.png,img/m8_001.png,img/m9_001.png" data-youtube="https://youtu.be/57afv7eFpKw"><span class="year">2024</span><span class="details">강원랜드 미디어 월/스크린 제작 참여작가 및 전시<br>정선군, 한국</span><img src="img/m7_001.png" alt="Exhibition Image" class="hover-img"></a></li>
+                    <li><div class="item-content"><span class="year">2023</span><span class="details">전북아트플랫폼 &lt;낙서창고 井&gt; 미디어아트 선정 및 전시<br>정읍, 한국</span></div></li>
+                    <li><a href="#" data-img="img/m11_01.png"><span class="year">2023</span><span class="details">수원화성 미디어아트전 참여작가 및 전시<br>수원, 한국</span><img src="img/m11_01.png" alt="Exhibition Image" class="hover-img"></a></li>
+                    <li><a href="#" data-img="img/m10_001.png"><span class="year">2023</span><span class="details">강릉대도호부관아 문화유산 미디어아트 참여작가 및 전시<br>강릉, 한국</span><img src="img/m10_001.png" alt="Exhibition Image" class="hover-img"></a></li>
+                    <li><a href="#" data-img="img/m12_002.png" data-youtube="https://www.youtube.com/watch?v=jKYZwj4TEMg"><span class="year">2022</span><span class="details">부산 유라시아플랫폼 미디어아트 공모 선정 및 전시<br>부산, 한국</span><img src="img/m12_002.png" alt="Exhibition Image" class="hover-img"></a></li>
+                    <li><a href="#" data-img="img/m13_001.png" data-youtube="https://youtu.be/4kdmkzwMT5Q"><span class="year">2022</span><span class="details">서울시-KT 광화문광장 미디어아트 공모 선정 및 전시<br>서울, 한국</span><img src="img/m13_001.png" alt="Exhibition Image" class="hover-img"></a></li>
+                    <li><div class="item-content"><span class="year">2021</span><span class="details">‘서울로 미디어 캔버스 네이쳐 프로젝트’ 선정 및 전시<br>서울, 한국</span></div></li>
+                    <li><div class="item-content"><span class="year">2020</span><span class="details">화려한 빛으로의 초대전 참여 작가<br>대구, 한국</span></div></li>
+                    <li><div class="item-content"><span class="year">2019</span><span class="details">'남원 사운드 페스티벌 2019' 전시<br>남원, 한국</span></div></li>
+                    <li><a href="#" data-img="img/m17_001.png,img/m17_002.png"><span class="year">2018</span><span class="details">‘수원야행’ 미디어파사드 전시<br>수원, 한국</span><img src="img/m17_001.png" alt="Exhibition Image" class="hover-img"></a></li>
+                    <li><a href="#" data-img="img/m16_001.png"><span class="year">2017</span><span class="details">제10회 청주공예비엔날레 기획전 전시<br>청주, 한국</span><img src="img/m16_001.png" alt="Exhibition Image" class="hover-img"></a></li>
+                </ul>
+            </section>
+
+            <!-- Museum & Exhibition Space Design Section -->
+            <section class="about section-exhibition">
+                <h2 class="section-title">MUSEUM & EXHIBITION SPACE DESIGN</h2>
+                <ul class="exhibition-list">
+                    <li>
+                        <a href="#" data-img="img/s1_01.png,img/s1_02.png,img/s1_03.png,img/s1_04.png">
+                            <span class="year">2025</span><span class="details">국립광주박물관 도자문화관 상설전시실 전시디자인</span>
+                            <img src="img/s1_01.png" alt="2025 Exhibition" class="hover-img">
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" data-img="img/s3_01.png">
+                            <span class="year">2024</span><span class="details">국립중앙박물관 국보순회전 (전시 디자인)</span>
+                            <img src="img/s3_01.png" alt="2024 Exhibition" class="hover-img">
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" data-img="img/s2_01.png,img/s2_02.png,img/s2_03.png">
+                            <span class="year">2024</span><span class="details">국립고궁박물관 (2층 상설전시실 재개관 전시환경 디자인)</span>
+                            <img src="img/s2_01.png" alt="2024 Exhibition" class="hover-img">
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" data-img="img/s4_01.png,img/s4_02.png,img/s4_03.png,img/s4_04.png">
+                            <span class="year">2023</span><span class="details">국립나주박물관 (상설전시실 재개관 전시환경 디자인)</span>
+                            <img src="img/s4_01.png" alt="2023 Exhibition" class="hover-img">
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" data-img="img/s5_01.png,img/s5_02.png,img/s5_03.png">
+                            <span class="year">2022</span><span class="details">국립경주박물관 불교조각실 전시디자인</span>
+                            <img src="img/s5_01.png" alt="2022 Exhibition" class="hover-img">
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" data-img="img/s6_01.png,img/s6_02.png">
+                            <span class="year">2021</span><span class="details">국립경주박물관 불교사원실 전시디자인</span>
+                            <img src="img/s6_01.png" alt="2021 Exhibition" class="hover-img">
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" data-img="img/s7_01.png,img/s7_02.png,img/s7_03.png">
+                            <span class="year">2020</span><span class="details">국립경주박물관 상설전시실 (3, 4전시실 개편) 전시디자인</span>
+                            <img src="img/s7_01.png" alt="2020 Exhibition" class="hover-img">
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <span class="year">2019</span><span class="details">국립경주박물관 상설전시실 (1전시실 개편) 전시디자인</span>
+                        </a>
+                    </li>
+                </ul>
+            </section>
+
+            <!-- Awards Section -->
+            <section class="about section-awards">
+                <h2 class="section-title">AWARDS</h2>
+                <ul class="exhibition-list">
+                    <li><div class="item-content"><span class="year">2025</span><span class="details">제6회 서울대학교병원 멀티시네마월 영상작품 공모 선정<br>(최우수상)</span></div></li>
+                    <li><div class="item-content"><span class="year">2022</span><span class="details">부산 유라시아플랫폼 미디어아트 공모 선정<br>(장려상)</span></div></li>
+                    <li><div class="item-content"><span class="year">2022</span><span class="details">서울시-KT 광화문광장 미디어아트 공모 선정<br>(장려상)</span></div></li>
+                </ul>
+            </section>
+
+            <!-- Education Section -->
+            <section class="about section-education">
+                <h2 class="section-title">EDUCATION</h2>
+                <ul class="exhibition-list">
+                    <li><div class="item-content"><span class="year">2026</span><span class="details">홍익대학교 일반대학원 디자인공예학과(공간디자인학) 박사 과정</span></div></li>
+                    <li><div class="item-content"><span class="year">2006</span><span class="details">홍익대학교 일반대학원 공간디자인 졸업 _ 미술학 석사</span></div></li>
+                    <li><div class="item-content"><span class="year">2004</span><span class="details">한남대학교 건축공학과 졸업 _ 공학사</span></div></li>
+                </ul>
+            </section>
+
+            <!-- Footer -->
+            <footer class="footer">
+                <div class="footer-links">
+                    <a href="mailto:um38ss@daum.net" class="contact-link">um38ss@daum.net</a>
+                    <div class="sns-links">
+                        <a href="https://www.instagram.com/lab_oe/" target="_blank"><i class="fab fa-instagram icon-gray"></i> Instagram</a>
+                        <a href="https://www.youtube.com/@_laboe4430/shorts" target="_blank"><i class="fab fa-youtube icon-gray"></i> YouTube</a>
+                    </div>
+                </div>
+                <p class="copyright">© 2026 KIM YOUNG TAE. All rights reserved.</p>
+            </footer>
+
+        </div>
+    </main>
+
+    <!-- Image Modal -->
+    <div id="image-modal" class="modal">
+        <canvas id="modal-particle-canvas" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0;"></canvas>
+        <div class="close-modal">
+            <span class="icon-bracket">(</span>
+            <span>Back</span>
+            <span class="icon-bracket">)</span>
+        </div>
+        <div class="modal-indicators" id="modal-indicators"></div>
+        <div class="modal-body-wrapper" style="display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; z-index: 1;">
+            <img class="modal-content" id="modal-img">
+            <a id="modal-youtube" href="#" target="_blank" class="modal-youtube-link" style="display:none;">
+                <i class="fab fa-youtube" style="margin-right: 8px; font-size: 1.2rem;"></i> youtube
+            </a>
+        </div>
+    </div>
+
+    <script src="js/three-bg.js"></script>
+    <script src="js/main.js"></script>
+</body>
+
+</html>

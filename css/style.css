@@ -1,0 +1,756 @@
+:root {
+    --bg-color: #050505;
+    /* 아주 짙은 검은색 */
+    --text-primary: #f0f0f0;
+    --text-secondary: #888888;
+    --point-color: #F37021;
+    /* Hermes Orange */
+
+    --font-display: 'Outfit', sans-serif;
+    --font-body: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html.lenis,
+html.lenis body {
+    height: auto;
+}
+
+.lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-weight: 400;
+    line-height: 1.6;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Three.js Background */
+#canvas-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+/* Typography Basics */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--font-display);
+    font-weight: 300;
+    text-transform: uppercase;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: var(--point-color);
+}
+
+/* Sections */
+section {
+    padding: 10vh 5vw;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.section-title {
+    font-size: 2rem;
+    color: var(--point-color);
+    margin-bottom: 2.8rem; /* 기존 4rem에서 30% 축소 */
+    letter-spacing: 0.1em;
+}
+
+/* =========================================
+   Philosophy Section Additional Utilities
+========================================= */
+.philosophy-content {
+    margin: 0 auto;
+}
+
+.philosophy-diagram {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 3rem;
+    margin: 3rem 0;
+}
+
+.diagram-group {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.circle {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    font-weight: 500;
+    line-height: 1.2;
+    text-align: center;
+}
+
+.circle span {
+    font-size: 0.85rem;
+    font-weight: 400;
+    font-family: var(--font-display);
+    margin-top: 0.3rem;
+    letter-spacing: 0.05em;
+    text-transform: lowercase;
+}
+
+.circle-blue {
+    border: 2px solid #00c3ff;
+    color: #00c3ff;
+}
+
+.circle-white {
+    position: relative;
+    border: 2px solid rgba(255, 255, 255, 0.2); /* 은은한 기본 테두리 */
+    color: #ffffff;
+    overflow: hidden; /* pseudo-element가 원 밖으로 나가지 않도록 */
+}
+
+/* 회전하는 빛 효과를 위한 가상 요소 */
+.circle-white::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(
+        transparent 0%, 
+        transparent 50%, 
+        rgba(255, 255, 255, 0.2) 72%,
+        rgba(255, 255, 255, 0.75) 92%,
+        rgba(255, 255, 255, 1.0) 100%
+    );
+    animation: rotateGlow 12s linear infinite; /* 더 느리게 (기존 7s -> 12s) */
+    z-index: -1;
+}
+
+/* 텍스트가 가려지지 않게 내부 컨텐츠 분리용 (옵션이나 현재 HTML 구조상 배경 역할만 하므로 z-index 세팅) */
+.circle-white::after {
+    content: '';
+    position: absolute;
+    inset: 2px; /* 테두리 두께만큼 안쪽으로 */
+    background: var(--bg-color); /* 배경색상과 동일하게 맞춰서 안쪽을 가림 */
+    border-radius: 50%;
+    z-index: -1;
+}
+
+@keyframes rotateGlow {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* 각각의 원에 다른 속도와 시작 각도(delay)를 주어 완전히 비대칭적으로 자연스럽게 움직이게 조정 */
+.diagram-group:nth-child(1) .circle:nth-child(1)::before {
+    animation-duration: 11s;
+    animation-delay: 0s;
+}
+.diagram-group:nth-child(1) .circle:nth-child(3)::before {
+    animation-duration: 14s;
+    animation-delay: -4s; /* 다른 시작 각도 */
+}
+.diagram-group:nth-child(2) .circle:nth-child(1)::before {
+    animation-duration: 13s;
+    animation-delay: -7s; /* 다른 시작 각도 */
+}
+.diagram-group:nth-child(2) .circle:nth-child(2)::before {
+    animation-duration: 10s;
+    animation-delay: -2s; /* 다른 시작 각도 */
+}
+
+.cross {
+    color: #ffffff;
+    font-size: 2rem;
+    font-weight: 300;
+}
+
+@media (max-width: 768px) {
+    .philosophy-diagram {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2rem;
+    }
+    
+    .circle {
+        width: 100px;
+        height: 100px;
+        font-size: 1.1rem;
+    }
+}
+
+/* Hero Section */
+.hero {
+    position: relative;
+}
+
+.hero-content {
+    mix-blend-mode: difference;
+    /* WebGL 요소와 겹칠 때 글씨를 보이게 해줌 */
+}
+
+.hero-title {
+    font-size: clamp(3rem, 8vw, 10rem);
+    line-height: 1.0;
+    letter-spacing: -0.02em;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.hero-title-name {
+    font-size: 0.85em; /* 15% smaller than the parent (LAB OE) */
+}
+
+.hero-subtitle {
+    font-family: var(--font-display);
+    font-size: clamp(1rem, 2vw, 1.5rem);
+    color: var(--point-color);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    font-weight: 300;
+}
+
+/* Scroll Indicator */
+.scroll-indicator {
+    position: absolute;
+    bottom: 5vh;
+    left: 5vw;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    color: var(--text-secondary);
+}
+
+.scroll-indicator .line {
+    width: 60px;
+    height: 1px;
+    background-color: #333;
+    position: relative;
+    overflow: hidden;
+}
+
+.scroll-indicator .line::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--point-color);
+    transform: translateX(-100%);
+    animation: scrollLine 2s infinite cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+@keyframes scrollLine {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    50% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* Works Placeholder */
+.work-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10vh;
+}
+
+@media (min-width: 768px) {
+    .work-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 5vw;
+    }
+
+    .work-item:nth-child(even) {
+        margin-top: 15vh;
+        /* 지그재그 레이아웃 효과 */
+    }
+}
+
+.work-text-only {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 5vh 0;
+}
+
+.temp-message {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    letter-spacing: 0.1em;
+    font-style: italic;
+}
+
+.work-image-placeholder {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background-color: #111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+    font-family: var(--font-display);
+    margin-bottom: 1.5rem;
+    transition: transform 0.5s ease;
+}
+
+.work-item:hover .work-image-placeholder {
+    transform: scale(1.02);
+}
+
+.work-title {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    transition: color 0.3s ease;
+}
+
+.work-item:hover .work-title {
+    color: var(--point-color);
+}
+
+.work-year {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.exhibition-list {
+    list-style: none;
+    border-top: 1px solid #222;
+    margin-top: 0; /* 제목과 목록 사이 간격 최소화 */
+}
+
+.exhibition-list li {
+    padding: 0;
+    border-bottom: 1px solid #222;
+    position: relative;
+    overflow: hidden;
+}
+
+.exhibition-list li a,
+.exhibition-list li .item-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1.94rem 2%; /* 기존의 2.0rem에서 약 3% 추가 축소 */
+    width: 100%;
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.3s ease, background-color 0.3s ease, transform 0.3s ease;
+}
+
+.exhibition-list img {
+    display: none;
+}
+
+/* Hover effect background fill */
+.exhibition-list li::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(243, 112, 33, 0.05);
+    /* Very subtle orange */
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    z-index: -1;
+}
+
+.exhibition-list li:hover::before {
+    transform: translateY(0);
+}
+
+.exhibition-list li:hover {
+    color: var(--point-color);
+}
+
+.exhibition-list li a:hover {
+    color: var(--point-color);
+}
+
+.exhibition-list li a:active,
+.exhibition-list li .item-content:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
+    background-color: rgba(243, 112, 33, 0.08);
+}
+
+/* 이미지 있는 항목 (링크): 오른쪽에 미세한 점 인디케이터 */
+.exhibition-list li:has(> a[data-img]) .year::after {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--point-color);
+    opacity: 0.85;
+    margin-left: 0.6rem;
+    vertical-align: middle;
+    transition: opacity 0.3s ease;
+}
+
+/* 호버 시 인디케이터 더 밝게 */
+.exhibition-list li:has(> a[data-img]):hover .year::after {
+    opacity: 1;
+}
+
+/* 이미지 없는 항목 (div): 약간 낮은 불투명도로 구분 */
+.exhibition-list li:has(> .item-content) {
+    opacity: 0.65;
+}
+
+.exhibition-list li:has(> .item-content):hover {
+    opacity: 1;
+}
+
+@media (min-width: 768px) {
+    .exhibition-list li a,
+    .exhibition-list li .item-content {
+        flex-direction: row;
+        align-items: baseline;
+    }
+}
+
+/* =========================================
+   Image Viewer Modal
+========================================= */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000000; /* 순수 검정 바탕 */
+    background-image: linear-gradient(
+        -45deg,
+        transparent 49%,
+        rgba(255, 255, 255, 0.04) 49%, /* 더 없고 없은 선 */
+        rgba(255, 255, 255, 0.04) 50%,
+        transparent 50%,
+        transparent 99%,
+        rgba(255, 255, 255, 0.04) 99%,
+        rgba(255, 255, 255, 0.04) 100%
+    );
+    background-size: 50px 50px; /* 심세한 패턴 간격 */
+    animation: slideModalBg 20s linear infinite; /* 더 느리게 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+@keyframes slideModalBg {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: -50px 50px; /* 사선 왼쪽 하단 이동 효과 */
+    }
+}
+
+.modal.show {
+    opacity: 1;
+    pointer-events: auto; /* 마우스 이벤트 활성화 */
+}
+
+.modal-content {
+    width: 69vw; /* 60vw -> 69vw (1.15배) */
+    height: 69vh; /* 60vh -> 69vh (1.15배) */
+    object-fit: contain;
+    transform: scale(0.95);
+    transition: transform 0.3s ease;
+    margin-top: 8vh; /* 다시 위로 6% (6vh) 이동 (초기 -7vh 기준 총 15% 하향 상태) */
+    margin-left: 4vw; /* 오른쪽으로 3% (3vw) 이동 (총 4vw 이동, 우측으로 4% 편중) */
+}
+
+.modal.show .modal-content {
+    transform: scale(1);
+}
+
+/* 전시별 개별 위치 조정 */
+#image-modal.modal-m17_001 .modal-content {
+    margin-top: 8vh; /* 수원야행: 현재 상태 유지 (위로 6%) */
+}
+
+#image-modal.modal-m7_001 .modal-content {
+    margin-top: 11vh; /* 강원랜드: 현재 8vh에서 3% (3vh) 하향 */
+}
+
+.modal-indicators {
+    position: absolute;
+    top: 11vh; /* 다시 위로 3% (3vh) 이동 (총 11vh, 이미지 상단과 정렬) */
+    left: 50%;
+    transform: translateX(-50%);
+    margin-left: 4vw; /* 이미지의 margin-left: 4vw와 맞춰서 이미지 기준 중앙 정렬 */
+    display: flex;
+    gap: 0.8rem;
+    z-index: 1001;
+    padding-bottom: 0; /* 이미지와의 거리를 top 옵션으로 조정했으므로 제거 */
+}
+
+.indicator-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.indicator-dot:hover {
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+.indicator-dot.active {
+    background-color: var(--point-color);
+    transform: scale(1.3);
+}
+
+.close-modal {
+    position: absolute;
+    top: 2rem;
+    right: 3%;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.36rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 1001;
+    font-family: Pretendard, sans-serif;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 50px;
+    padding: 0.36rem 0.86rem;
+    background: transparent;
+}
+
+.close-modal:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.8);
+}
+
+.close-modal span {
+    font-size: 0.72rem;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+}
+
+.close-modal .icon-bracket {
+    font-size: 0.86rem;
+    font-weight: 300;
+    position: relative;
+    top: -1px;
+}
+
+.close-modal:hover {
+    color: var(--point-color);
+}
+
+@media (max-width: 768px) {
+    .close-modal {
+        top: 1rem;
+        right: 1.5rem;
+    }
+    .close-modal span {
+        font-size: 0.9rem;
+        display: none; /* Hide text on very small screens to save space if desired, or keep it */
+    }
+    .close-modal i {
+        font-size: 1.8rem;
+    }
+}
+
+.exhibition-list .year {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    min-width: 220px;
+    font-weight: 300;
+}
+
+.exhibition-list .details {
+    font-size: 1.1rem;
+    line-height: 1.5;
+    font-weight: 300;
+}
+
+/* Footer */
+.footer {
+    padding: 4rem 0;
+    text-align: center;
+    border-top: 1px solid #222;
+}
+
+.footer-links {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.contact-link {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.contact-link:hover {
+    color: var(--point-color);
+}
+
+.sns-links {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.sns-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
+    transition: color 0.3s ease;
+}
+
+.sns-links a:hover {
+    color: var(--text-primary);
+}
+
+.sns-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0%;
+    height: 1px;
+    background-color: var(--point-color);
+    transition: width 0.3s ease;
+}
+
+.sns-links a:hover {
+    color: var(--point-color);
+}
+
+.sns-links a:hover::after {
+    width: 100%;
+}
+
+.icon-gray {
+    color: #999999;
+    font-size: 1.2rem;
+    margin-right: 0.3rem;
+    transition: color 0.3s ease;
+}
+
+.sns-links a:hover .highlight {
+    color: var(--point-color);
+    font-weight: 700;
+    margin: 0 5%;
+}
+
+.copyright {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-family: var(--font-display);
+    letter-spacing: 0.05em;
+}
+
+/* =========================================
+   Modal YouTube Link
+========================================= */
+.modal-youtube-link {
+    color: #fff;
+    margin-top: calc(1.5rem + 5vh); /* 기존 대비 아래로 5% 위치 이동 */
+    text-decoration: none;
+    font-size: 1.1rem;
+    position: relative;
+    padding-bottom: 4px;
+    display: inline-block;
+    transition: color 0.3s ease;
+}
+
+.modal-youtube-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.8);
+    animation: blinkUnderline 1.5s infinite alternate; /* 깜빡이는 밑줄, 더 천천히 */
+    transition: background-color 0.3s ease;
+}
+
+.modal-youtube-link:hover {
+    color: var(--point-color);
+}
+
+.modal-youtube-link:hover::after {
+    background-color: var(--point-color);
+}
+
+@keyframes blinkUnderline {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}

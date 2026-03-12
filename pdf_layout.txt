@@ -1,0 +1,29 @@
+P0 Y124.8 X670.2: s1_01.png s1_02.png s1_03.png
+P0 Y197.6 X670.2: s3_01.png
+P0 Y260.9 X670.2: s2_01.png s2_02.png s2_03.png
+P0 Y324.9 X656.0: s4_01.png s4_02.png s4_03.png
+P0 Y326.1 X891.0: s4_04.png
+P0 Y386.7 X670.2: s5_01.png s5_02.png
+P0 Y444.2 X670.2: s6_01.png s6_02.png
+P1 Y143.7 X670.2: s7_01.png s7_02.png s7_03.png
+P2 Y114.4 X670.2: m1_01.png
+P2 Y138.9 X670.2: https://youtu.be/IWG60YMttEs
+P2 Y179.0 X670.2: m2_01.png
+P2 Y238.4 X670.2: m3_01.png
+P2 Y262.6 X670.2: https://youtu.be/-45vd8GlQbo
+P2 Y306.7 X670.2: m4_01.png
+P2 Y333.4 X670.2: https://www.youtube.com/watch?v=3V4NV4mrNOo
+P2 Y371.3 X670.2: m5_01.png
+P2 Y427.7 X670.2: m6_01.png
+P2 Y452.7 X670.2: https://youtu.be/niTaHsrvXlQ
+P3 Y077.3 X621.2: m7_01.png
+P3 Y077.3 X719.9: m8_01.png m9_01.png
+P3 Y111.7 X621.2: https://youtu.be/57afv7eFpKw
+P3 Y208.0 X621.2: m11_01.png
+P3 Y281.5 X621.2: m10_01.png
+P3 Y357.9 X621.2: m12_01.png
+P3 Y382.0 X621.2: https://www.youtube.com/watch?v=jKYZwj4TEMg
+P3 Y422.6 X621.2: m13_01.png
+P3 Y446.5 X621.2: https://youtu.be/4kdmkzwMT5Q
+P4 Y322.3 X779.3: m17_01.png
+P4 Y397.3 X779.3: m16_01.png
