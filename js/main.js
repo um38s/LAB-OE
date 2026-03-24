@@ -1,3 +1,24 @@
+// System Theme Detection & Toggle
+const themeSwitch = document.getElementById('theme-switch');
+const currentTheme = localStorage.getItem('theme') || null;
+
+if (currentTheme) {
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    if (currentTheme === 'light') themeSwitch.checked = true;
+} else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+    document.documentElement.setAttribute('data-theme', 'light');
+    themeSwitch.checked = true;
+} else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+}
+
+themeSwitch.addEventListener('change', function(e) {
+    const theme = e.target.checked ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+    window.dispatchEvent(new Event('themeChanged'));
+});
+
 // Lenis를 사용한 부드러운 스크롤 (관성 스크롤) 초기화
 const lenis = new Lenis({
     duration: 1.2,
@@ -209,7 +230,10 @@ document.addEventListener("DOMContentLoaded", () => {
             const pulse = Math.sin(p.phase) * 0.15 + 0.85;
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(255, 255, 255, ${p.opacity * pulse})`;
+            // 다크모드, 라이트모드 모두 개별 전시 모달(Modal)의 파티클 색상을 무채색 계열로 통일
+            const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+            const colorStr = isLight ? `100, 100, 100` : `160, 160, 160`; // 다크모드에서도 회색 적용
+            ctx.fillStyle = `rgba(${colorStr}, ${p.opacity * pulse})`;
             ctx.fill();
         });
         animationId = requestAnimationFrame(drawParticles);

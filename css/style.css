@@ -5,9 +5,23 @@
     --text-secondary: #888888;
     --point-color: #F37021;
     /* Hermes Orange */
+    --border-color: #222222;
+    --modal-bg: #000000;
+    --modal-overlay: rgba(255, 255, 255, 0.4);
 
     --font-display: 'Outfit', sans-serif;
     --font-body: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+}
+
+/* Light Theme Variables */
+[data-theme="light"] {
+    --bg-color: #f4f4f4;   /* 깔끔한 밝은 회색 바탕 */
+    --text-primary: #222222; /* 너무 진하지 않은 검정 */
+    --text-secondary: #777777; /* 중간 톤 회색 */
+    --point-color: #333333; /* 더 짙은 회색으로 섹션 제목 강조 */
+    --border-color: #dddddd;
+    --modal-bg: #ffffff;
+    --modal-overlay: rgba(0, 0, 0, 0.3);
 }
 
 * {
@@ -34,6 +48,96 @@ body {
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+/* =========================================
+   Theme Toggle Switch UI
+========================================= */
+.theme-toggle-wrapper {
+    position: fixed;
+    top: 2.2rem;
+    right: 4%;
+    z-index: 1100; 
+}
+
+.theme-toggle {
+    display: inline-block;
+    position: relative;
+    width: 72px; /* Back 버튼 문구 두께감을 맞추기 위해 가로 폭 균등 확장 */
+    height: 32px;
+    cursor: pointer;
+}
+
+.theme-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: transparent;
+    border: 1px solid var(--text-secondary);
+    border-radius: 34px;
+    transition: 0.4s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 8px;
+    box-sizing: border-box;
+}
+
+.toggle-slider::before {
+    position: absolute;
+    content: "";
+    height: 24px;
+    width: 24px;
+    left: 3px;
+    bottom: 3px;
+    background-color: var(--text-primary);
+    border-radius: 50%;
+    transition: 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    z-index: 2;
+}
+
+.theme-toggle input:checked + .toggle-slider::before {
+    transform: translateX(40px); /* 72px 너비에 맞게 이동 범위 오차 조정 */
+}
+
+.toggle-icon-sun, .toggle-icon-moon {
+    color: var(--text-secondary);
+    font-size: 13px;
+    z-index: 1;
+    transition: color 0.4s ease, opacity 0.4s ease;
+}
+
+/* Base states */
+.toggle-icon-sun { opacity: 0; }
+.toggle-icon-moon { opacity: 1; }
+
+/* Light Theme logic */
+[data-theme="light"] .toggle-icon-moon { opacity: 0; }
+[data-theme="light"] .toggle-icon-sun {
+    opacity: 1;
+    color: var(--bg-color); /* blends perfectly with slider knob */
+    z-index: 3; 
+}
+
+/* Dark Theme logic */
+[data-theme="dark"] .toggle-icon-sun { opacity: 0; }
+[data-theme="dark"] .toggle-icon-moon {
+    opacity: 1;
+    color: var(--bg-color);
+    z-index: 3;
+}
+
+.theme-toggle:hover .toggle-slider {
+    border-color: var(--text-primary);
 }
 
 /* Three.js Background */
@@ -140,6 +244,7 @@ section {
     border: 2px solid rgba(255, 255, 255, 0.2); /* 은은한 기본 테두리 */
     color: #ffffff;
     overflow: hidden; /* pseudo-element가 원 밖으로 나가지 않도록 */
+    transition: color 0.5s ease, border-color 0.5s ease;
 }
 
 /* 회전하는 빛 효과를 위한 가상 요소 */
@@ -169,6 +274,23 @@ section {
     background: var(--bg-color); /* 배경색상과 동일하게 맞춰서 안쪽을 가림 */
     border-radius: 50%;
     z-index: -1;
+    transition: background 0.5s ease;
+}
+
+/* Light Theme overrides for Diagram */
+[data-theme="light"] .circle-white {
+    border-color: rgba(0, 0, 0, 0.30); /* 0.15 -> 0.30: 조금 더 진한 회색 테두리 */
+    color: var(--text-primary);
+}
+
+[data-theme="light"] .circle-white::before {
+    background: conic-gradient(
+        transparent 0%, 
+        transparent 50%, 
+        rgba(0, 0, 0, 0.1) 72%,
+        rgba(0, 0, 0, 0.3) 92%,
+        rgba(0, 0, 0, 0.6) 100%
+    );
 }
 
 @keyframes rotateGlow {
@@ -204,6 +326,10 @@ section {
     font-weight: 300;
 }
 
+[data-theme="light"] .cross {
+    color: var(--text-primary);
+}
+
 @media (max-width: 768px) {
     .philosophy-diagram {
         flex-direction: column;
@@ -226,6 +352,11 @@ section {
 .hero-content {
     mix-blend-mode: difference;
     /* WebGL 요소와 겹칠 때 글씨를 보이게 해줌 */
+    transition: mix-blend-mode 0.3s ease;
+}
+
+[data-theme="light"] .hero-content {
+    mix-blend-mode: normal; /* 라이트 모드에서는 글자색 반전 오류를 막기 위해 일반 모드로 전환 */
 }
 
 .hero-title {
@@ -237,6 +368,8 @@ section {
 }
 
 .hero-title-name {
+    display: inline-block;
+    transform: translateY(-2vh); /* 위쪽으로 2% 이동 (-3vh에서 1% 낮춰 내림) */
     font-size: 0.85em; /* 15% smaller than the parent (LAB OE) */
 }
 
@@ -247,6 +380,7 @@ section {
     letter-spacing: 0.3em;
     text-transform: uppercase;
     font-weight: 300;
+    margin-left: 0.3em; /* 큰 제목(L, K)과의 시각적 수직 정렬을 맞추기 위한 미세 이동 */
 }
 
 /* Scroll Indicator */
@@ -363,15 +497,17 @@ section {
 
 .exhibition-list {
     list-style: none;
-    border-top: 1px solid #222;
-    margin-top: 0; /* 제목과 목록 사이 간격 최소화 */
+    border-top: 1px solid var(--border-color);
+    margin-top: 0; 
+    transition: border-color 0.5s ease;
 }
 
 .exhibition-list li {
     padding: 0;
-    border-bottom: 1px solid #222;
+    border-bottom: 1px solid var(--border-color);
     position: relative;
     overflow: hidden;
+    transition: border-color 0.5s ease;
 }
 
 .exhibition-list li a,
@@ -413,6 +549,10 @@ section {
     color: var(--point-color);
 }
 
+[data-theme="light"] .exhibition-list li::before {
+    background-color: rgba(0, 0, 0, 0.03); /* 라이트 모드에서는 옅은 회색 적용 */
+}
+
 .exhibition-list li a:hover {
     color: var(--point-color);
 }
@@ -421,7 +561,12 @@ section {
 .exhibition-list li .item-content:active {
     transform: scale(0.98);
     transition: transform 0.1s ease;
-    background-color: rgba(243, 112, 33, 0.08);
+    background-color: rgba(243, 112, 33, 0.08); /* 기존 오렌지 점유율 */
+}
+
+[data-theme="light"] .exhibition-list li a:active,
+[data-theme="light"] .exhibition-list li .item-content:active {
+    background-color: rgba(0, 0, 0, 0.06); /* 라이트 모드에서는 클릭 시 짙은 회색 적용 */
 }
 
 /* 이미지 있는 항목 (링크): 오른쪽에 미세한 점 인디케이터 */
@@ -469,14 +614,14 @@ section {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #000000; /* 순수 검정 바탕 */
+    background-color: var(--modal-bg);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 1000;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.3s ease, background-color 0.5s ease;
 }
 
 .modal.show {
@@ -528,8 +673,16 @@ section {
     transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
+[data-theme="light"] .indicator-dot {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
 .indicator-dot:hover {
     background-color: rgba(255, 255, 255, 0.8);
+}
+
+[data-theme="light"] .indicator-dot:hover {
+    background-color: rgba(0, 0, 0, 0.5);
 }
 
 .indicator-dot.active {
@@ -539,20 +692,23 @@ section {
 
 .close-modal {
     position: absolute;
-    top: 2rem;
-    right: 3%;
-    color: #fff;
+    top: 6.5rem; /* 기존보다 약 10% 더 여유를 두고 밑으로 띄움 */
+    right: 4%;
+    width: 72px; /* 테마 토글 스위치 사이즈와 똑같이 맞춤 (72px) */
+    height: 32px; /* 테마 토글 스위치 사이즈와 똑같이 맞춤 */
+    box-sizing: border-box;
+    padding: 0;
+    color: var(--text-primary);
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.36rem;
+    gap: 0.2rem;
     cursor: pointer;
     transition: all 0.3s ease;
     z-index: 1001;
     font-family: Pretendard, sans-serif;
-    border: 1px solid rgba(255, 255, 255, 0.4);
+    border: 1px solid var(--modal-overlay);
     border-radius: 50px;
-    padding: 0.36rem 0.86rem;
     background: transparent;
 }
 
@@ -562,13 +718,13 @@ section {
 }
 
 .close-modal span {
-    font-size: 0.72rem;
+    font-size: 0.72rem; /* 72px 가로 크기 안에 '( Back )' 문구 회복 */
     font-weight: 300;
     letter-spacing: 0.05em;
 }
 
 .close-modal .icon-bracket {
-    font-size: 0.86rem;
+    font-size: 0.8rem;
     font-weight: 300;
     position: relative;
     top: -1px;
@@ -579,16 +735,58 @@ section {
 }
 
 @media (max-width: 768px) {
+    .theme-toggle-wrapper {
+        top: 1.2rem;
+        right: 5%;
+        transform: scale(0.85); 
+        transform-origin: right top;
+    }
+    .hero-title {
+        font-size: clamp(2.8rem, 12vw, 5.5rem);
+        word-break: keep-all; 
+    }
+    .hero-subtitle {
+        font-size: 0.9rem;
+    }
+    .section-title {
+        font-size: 1.5rem;
+    }
+    .exhibition-list .year {
+        min-width: auto;
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+    }
+    .exhibition-list li a, .exhibition-list li .item-content {
+        flex-direction: column;
+        gap: 0.5rem;
+        padding: 1.5rem 0;
+    }
+    /* Set Mobile modal sizing to guarantee fitting */
+    .modal-content {
+        width: 95vw;
+        height: auto;
+        max-height: 65vh;
+        margin-left: 0;
+        margin-top: 0;
+        transform: scale(0.95);
+    }
+    #image-modal.modal-m17_001 .modal-content,
+    #image-modal.modal-m7_001 .modal-content {
+        margin-top: 0;
+    }
+    .modal-indicators {
+        top: 85vh; /* move indicators below explicitly in mobile */
+        margin-left: 0;
+    }
     .close-modal {
-        top: 1rem;
-        right: 1.5rem;
+        top: 5.2rem; /* 모바일 기준 동일하게 10% 하강 조정 */
+        right: 5%;
+        transform: scale(0.85); /* 위쪽 테마 토글 스위치와 완전히 동일하게 스케일 축소 */
+        transform-origin: right top;
     }
     .close-modal span {
-        font-size: 0.9rem;
-        display: none; /* Hide text on very small screens to save space if desired, or keep it */
-    }
-    .close-modal i {
-        font-size: 1.8rem;
+        display: inline-block; /* 크기 강제 이후로는 숨길 필요 없음 */
+        font-size: 0.65rem;
     }
 }
 
@@ -695,7 +893,7 @@ section {
    Modal YouTube Link
 ========================================= */
 .modal-youtube-link {
-    color: #fff;
+    color: var(--text-primary);
     margin-top: calc(1.5rem + 5vh); /* 기존 대비 아래로 5% 위치 이동 */
     text-decoration: none;
     font-size: 1.1rem;
@@ -712,9 +910,13 @@ section {
     left: 0;
     width: 100%;
     height: 1px;
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: var(--text-secondary);
     animation: blinkUnderline 1.5s infinite alternate; /* 깜빡이는 밑줄, 더 천천히 */
     transition: background-color 0.3s ease;
+}
+
+[data-theme="dark"] .modal-youtube-link::after {
+    background-color: rgba(255, 255, 255, 0.8);
 }
 
 .modal-youtube-link:hover {
