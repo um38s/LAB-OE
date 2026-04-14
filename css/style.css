@@ -365,6 +365,12 @@ section {
     font-weight: 300;
 }
 
+.cross.invisible {
+    opacity: 0;
+    pointer-events: none;
+    user-select: none;
+}
+
 [data-theme="light"] .cross {
     color: var(--text-primary);
 }
