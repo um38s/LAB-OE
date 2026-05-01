@@ -86,6 +86,40 @@ document.addEventListener("DOMContentLoaded", () => {
     const modalImg = document.getElementById("modal-img");
     const closeBtn = document.querySelector(".close-modal");
     const modalYoutube = document.getElementById("modal-youtube");
+    const modalPrev = document.getElementById("modal-prev");
+    const modalNext = document.getElementById("modal-next");
+
+    let currentImageArray = [];
+    let currentImageIndex = 0;
+
+    const updateModalImage = (index) => {
+        if (modalImg && currentImageArray[index]) {
+            modalImg.src = currentImageArray[index].trim();
+        }
+        if (currentImageArray.length > 1) {
+            document.querySelectorAll('.indicator-dot').forEach((dot, i) => {
+                dot.classList.toggle('active', i === index);
+            });
+        }
+    };
+
+    if (modalPrev && modalNext) {
+        modalPrev.addEventListener("click", (e) => {
+            e.stopPropagation();
+            if (currentImageArray.length > 1) {
+                currentImageIndex = (currentImageIndex - 1 + currentImageArray.length) % currentImageArray.length;
+                updateModalImage(currentImageIndex);
+            }
+        });
+        
+        modalNext.addEventListener("click", (e) => {
+            e.stopPropagation();
+            if (currentImageArray.length > 1) {
+                currentImageIndex = (currentImageIndex + 1) % currentImageArray.length;
+                updateModalImage(currentImageIndex);
+            }
+        });
+    }
 
     if (modal && modalImg && closeBtn) {
         document.querySelectorAll(".exhibition-list li a").forEach(link => {
@@ -99,41 +133,37 @@ document.addEventListener("DOMContentLoaded", () => {
                     const imgSrc = dataImg || (img ? img.getAttribute("src") : null);
                     
                     if (imgSrc) {
-                        const imageArray = imgSrc.split(',').map(s => s.trim()).filter(s => s !== "");
-                        let currentIndex = 0;
+                        currentImageArray = imgSrc.split(',').map(s => s.trim()).filter(s => s !== "");
+                        currentImageIndex = 0;
                         
-                        const firstImage = imageArray[0].trim();
+                        const firstImage = currentImageArray[0].trim();
                         const fileName = firstImage.split('/').pop().split('.')[0];
                         modal.classList.add(`modal-${fileName}`);
-                        
-                        const updateModalImage = (index) => {
-                            if (modalImg) modalImg.src = imageArray[index].trim();
-                            if (imageArray.length > 1) {
-                                document.querySelectorAll('.indicator-dot').forEach((dot, i) => {
-                                    dot.classList.toggle('active', i === index);
-                                });
-                            }
-                        };
                         
                         const indicatorsContainer = document.getElementById("modal-indicators");
                         if (indicatorsContainer) {
                             indicatorsContainer.innerHTML = '';
-                            if (imageArray.length > 1) {
-                                imageArray.forEach((_, i) => {
+                            if (currentImageArray.length > 1) {
+                                currentImageArray.forEach((_, i) => {
                                     const dot = document.createElement("div");
                                     dot.className = "indicator-dot";
                                     if (i === 0) dot.classList.add("active");
                                     dot.addEventListener("click", (evt) => {
                                         evt.stopPropagation();
-                                        currentIndex = i;
-                                        updateModalImage(currentIndex);
+                                        currentImageIndex = i;
+                                        updateModalImage(currentImageIndex);
                                     });
                                     indicatorsContainer.appendChild(dot);
                                 });
+                                if (modalPrev) modalPrev.style.display = "block";
+                                if (modalNext) modalNext.style.display = "block";
+                            } else {
+                                if (modalPrev) modalPrev.style.display = "none";
+                                if (modalNext) modalNext.style.display = "none";
                             }
                         }
                         
-                        updateModalImage(currentIndex);
+                        updateModalImage(currentImageIndex);
                         
                         const youtubeUrl = link.getAttribute("data-youtube");
                         if (youtubeUrl && modalYoutube) {
@@ -165,13 +195,17 @@ document.addEventListener("DOMContentLoaded", () => {
                 const indicatorsContainer = document.getElementById("modal-indicators");
                 if (indicatorsContainer) indicatorsContainer.innerHTML = '';
                 if (modalYoutube) modalYoutube.style.display = "none";
+                if (modalPrev) modalPrev.style.display = "none";
+                if (modalNext) modalNext.style.display = "none";
+                currentImageArray = [];
+                currentImageIndex = 0;
             }, 300);
             if (lenis) lenis.start();
         };
 
         closeBtn.addEventListener("click", closeModal);
         modal.addEventListener("click", (e) => {
-            if (e.target === modal || (e.target.closest('.modal-body-wrapper') === null && e.target !== closeBtn && !closeBtn.contains(e.target) && !e.target.classList.contains('indicator-dot'))) {
+            if (e.target === modal || (e.target.closest('.modal-body-wrapper') === null && e.target !== closeBtn && !closeBtn.contains(e.target) && !e.target.classList.contains('indicator-dot') && !e.target.closest('.modal-nav'))) {
                  closeModal();
             }
         });

@@ -1005,3 +1005,49 @@ section {
         opacity: 0;
     }
 }
+
+/* =========================================
+   Modal Navigation Arrows
+========================================= */
+.modal-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 3rem;
+    cursor: pointer;
+    z-index: 1002;
+    padding: 1rem 3vw;
+    transition: color 0.3s ease, transform 0.3s ease;
+    display: none; /* hidden by default */
+}
+
+.modal-nav:hover {
+    color: rgba(255, 255, 255, 0.9);
+    transform: translateY(-50%) scale(1.1);
+}
+
+[data-theme="light"] .modal-nav {
+    color: rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="light"] .modal-nav:hover {
+    color: rgba(0, 0, 0, 0.8);
+}
+
+.modal-nav.prev-arrow {
+    left: 0;
+}
+
+.modal-nav.next-arrow {
+    right: 0;
+}
+
+@media (max-width: 768px) {
+    .modal-nav {
+        font-size: 2rem;
+        padding: 1rem 4vw;
+    }
+}
