@@ -968,6 +968,18 @@ section {
     transition: color 0.3s ease;
 }
 
+/* 2026 해치마당: 이미지(margin-left: 4vw)와 동일하게 유튜브 링크 가로 중앙 정렬 */
+#image-modal.modal-001 .modal-youtube-link {
+    margin-left: 4vw;
+}
+
+/* 모바일에서는 이미지 margin-left가 0이므로 링크도 기본값 유지 */
+@media (max-width: 768px) {
+    #image-modal.modal-001 .modal-youtube-link {
+        margin-left: 4px;
+    }
+}
+
 .modal-youtube-link i {
     margin-right: 8px;
     font-size: 1.2rem;

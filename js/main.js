@@ -228,7 +228,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let particles = [];
     let animationId = null;
-    const PARTICLE_COUNT = 72;
+    const PARTICLE_COUNT = window.innerWidth < 768 ? 40 : 72; // 모바일에서는 파티클 수 축소
 
     function resizeCanvas() {
         if (!canvas) return;

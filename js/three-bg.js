@@ -35,7 +35,7 @@ container.appendChild(renderer.domElement);
 
 // 파티클 생성 - 개수를 줄여 CPU/GPU 과부하 방지
 const geometry = new THREE.BufferGeometry();
-const count = 1200; /* 3000 -> 1200으로 대폭 욕소하여 성능 확보 */
+const count = window.innerWidth < 768 ? 600 : 1200; /* 모바일에서는 절반으로 줄여 성능 확보 */
 const positions = new Float32Array(count * 3);
 const sizes = new Float32Array(count);
 
@@ -128,6 +128,15 @@ document.addEventListener('mousemove', (event) => {
     targetX = (event.clientX / window.innerWidth) * 2 - 1;
     targetY = -(event.clientY / window.innerHeight) * 2 + 1;
 });
+
+// 모바일 터치에서도 동일한 파티클/카메라 인터랙션 제공
+document.addEventListener('touchmove', (event) => {
+    const touch = event.touches[0];
+    if (touch) {
+        targetX = (touch.clientX / window.innerWidth) * 2 - 1;
+        targetY = -(touch.clientY / window.innerHeight) * 2 + 1;
+    }
+}, { passive: true });
 
 // 탭이 백그라운드로 가면 렌더링 일시정지 (성능 보호)
 let isPageVisible = true;
