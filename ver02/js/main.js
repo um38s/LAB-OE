@@ -431,59 +431,129 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (modal && modalImg && closeBtn) {
+        const openModalFromLink = (link) => {
+            const dataImg = link.getAttribute('data-img');
+            const fallbackImg = link.querySelector('img');
+            const imgSrc = dataImg || (fallbackImg ? fallbackImg.getAttribute('src') : null);
+            if (!imgSrc) return;
+
+            currentImageArray = imgSrc.split(',').map((s) => s.trim()).filter(Boolean);
+            currentImageIndex = 0;
+
+            if (indicatorsContainer) {
+                indicatorsContainer.innerHTML = '';
+                if (currentImageArray.length > 1) {
+                    currentImageArray.forEach((_, i) => {
+                        const dot = document.createElement('div');
+                        dot.className = 'indicator-dot';
+                        if (i === 0) dot.classList.add('active');
+                        dot.addEventListener('click', (evt) => {
+                            evt.stopPropagation();
+                            currentImageIndex = i;
+                            updateModalImage(currentImageIndex);
+                        });
+                        indicatorsContainer.appendChild(dot);
+                    });
+                    if (modalPrev) modalPrev.style.display = 'block';
+                    if (modalNext) modalNext.style.display = 'block';
+                } else {
+                    if (modalPrev) modalPrev.style.display = 'none';
+                    if (modalNext) modalNext.style.display = 'none';
+                }
+            }
+
+            updateModalImage(currentImageIndex);
+
+            const youtubeUrl = link.getAttribute('data-youtube');
+            if (youtubeUrl && modalYoutube) {
+                modalYoutube.href = youtubeUrl;
+                modalYoutube.style.display = 'inline-block';
+            } else if (modalYoutube) {
+                modalYoutube.style.display = 'none';
+                modalYoutube.href = '#';
+            }
+
+            // 프리뷰/행 상태 정리 후 모달 오픈
+            hidePreview();
+            clearRowStates();
+            modal.classList.add('show');
+            if (lenis) lenis.stop();
+        };
+
+        // ---- 모바일 2단계 탭: 첫 탭 = 프리뷰 표시, 같은 행 재탭 = 모달 오픈 ----
+        let armedLi = null;
+        let armedLink = null;
+
+        const clearArmed = () => {
+            if (!armedLi) return;
+            armedLi.classList.remove('is-hovered');
+            const ul = armedLi.closest('.exhibition-list');
+            if (ul) ul.classList.remove('is-dimmed');
+            armedLi = null;
+            armedLink = null;
+            hidePreview();
+        };
+
+        // 탭한 행 바로 아래(공간 없으면 위)에 프리뷰 고정 배치
+        const showPreviewAtRow = (li, src) => {
+            if (!preview || !previewImg) return;
+            if (previewImg.getAttribute('src') !== src) previewImg.setAttribute('src', src);
+            const rect = li.getBoundingClientRect();
+            const pw = preview.offsetWidth;
+            const ph = preview.offsetHeight;
+            const x = Math.max(12, (window.innerWidth - pw) / 2);
+            let y = rect.bottom + 12;
+            if (y + ph > window.innerHeight - 12) y = Math.max(12, rect.top - ph - 12);
+            preview.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
+            previewActive = true;
+            gsap.to(previewInner, { opacity: 1, scale: 1, duration: 0.3, ease: 'power3.out' });
+            gsap.fromTo(viewBtn, { scale: 0 }, { scale: 1, duration: 0.3, ease: 'back.out(1.7)' });
+        };
+
         document.querySelectorAll('.exhibition-list li a').forEach((link) => {
             link.addEventListener('click', (e) => {
                 if (link.getAttribute('href') !== '#') return;
                 e.preventDefault();
 
                 const dataImg = link.getAttribute('data-img');
-                const fallbackImg = link.querySelector('img');
-                const imgSrc = dataImg || (fallbackImg ? fallbackImg.getAttribute('src') : null);
-                if (!imgSrc) return;
-
-                currentImageArray = imgSrc.split(',').map((s) => s.trim()).filter(Boolean);
-                currentImageIndex = 0;
-
-                if (indicatorsContainer) {
-                    indicatorsContainer.innerHTML = '';
-                    if (currentImageArray.length > 1) {
-                        currentImageArray.forEach((_, i) => {
-                            const dot = document.createElement('div');
-                            dot.className = 'indicator-dot';
-                            if (i === 0) dot.classList.add('active');
-                            dot.addEventListener('click', (evt) => {
-                                evt.stopPropagation();
-                                currentImageIndex = i;
-                                updateModalImage(currentImageIndex);
-                            });
-                            indicatorsContainer.appendChild(dot);
-                        });
-                        if (modalPrev) modalPrev.style.display = 'block';
-                        if (modalNext) modalNext.style.display = 'block';
-                    } else {
-                        if (modalPrev) modalPrev.style.display = 'none';
-                        if (modalNext) modalNext.style.display = 'none';
+                if (!isDesktop && dataImg) {
+                    const li = link.closest('li');
+                    if (armedLi !== li) {
+                        // 첫 탭: 행 강조 + 프리뷰
+                        clearArmed();
+                        armedLi = li;
+                        armedLink = link;
+                        li.classList.add('is-hovered');
+                        const ul = li.closest('.exhibition-list');
+                        if (ul) ul.classList.add('is-dimmed');
+                        showPreviewAtRow(li, dataImg.split(',')[0].trim());
+                        return;
                     }
+                    // 같은 행 두 번째 탭: 모달
+                    clearArmed();
                 }
-
-                updateModalImage(currentImageIndex);
-
-                const youtubeUrl = link.getAttribute('data-youtube');
-                if (youtubeUrl && modalYoutube) {
-                    modalYoutube.href = youtubeUrl;
-                    modalYoutube.style.display = 'inline-block';
-                } else if (modalYoutube) {
-                    modalYoutube.style.display = 'none';
-                    modalYoutube.href = '#';
-                }
-
-                // 프리뷰/행 상태 정리 후 모달 오픈
-                hidePreview();
-                clearRowStates();
-                modal.classList.add('show');
-                if (lenis) lenis.stop();
+                openModalFromLink(link);
             });
         });
+
+        // 프리뷰 자체를 탭해도 모달 오픈
+        if (preview) {
+            preview.addEventListener('click', () => {
+                if (isDesktop || !armedLink) return;
+                const link = armedLink;
+                clearArmed();
+                openModalFromLink(link);
+            });
+        }
+
+        // 리스트 밖 탭 또는 스크롤 시 프리뷰 해제
+        document.addEventListener('click', (e) => {
+            if (isDesktop || !armedLi) return;
+            if (!e.target.closest('.exhibition-list li') && !e.target.closest('#hover-preview')) clearArmed();
+        });
+        window.addEventListener('scroll', () => {
+            if (!isDesktop) clearArmed();
+        }, { passive: true });
 
         const closeModal = () => {
             modal.classList.remove('show');

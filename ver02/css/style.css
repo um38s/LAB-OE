@@ -250,8 +250,22 @@ html:not(.js) #intro-overlay {
     transform: scale(0);
 }
 
+/* 터치 기기: 프리뷰를 2단계 탭 UI로 사용 (JS가 탭한 행 기준으로 위치 지정) */
 @media (hover: none), (pointer: coarse) {
-    #hover-preview { display: none; }
+    #hover-preview {
+        width: min(320px, 82vw);
+        height: auto;
+        aspect-ratio: 340 / 226;
+        pointer-events: auto;
+        cursor: pointer;
+    }
+
+    #hover-preview .view-btn {
+        width: 72px;
+        height: 72px;
+        margin: -36px 0 0 -36px;
+        font-size: 0.85rem;
+    }
 }
 
 /* ---------- 히어로 ---------- */
