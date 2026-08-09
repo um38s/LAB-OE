@@ -210,13 +210,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // =====================================================
-    // 인트로 오버레이 (세션당 1회, 곡선이 위로 걷힘)
+    // 인트로 오버레이 (매 로드마다, 곡선이 위로 걷힘)
     // =====================================================
     const overlay = document.getElementById('intro-overlay');
-    const introPlayed = sessionStorage.getItem('laboe_intro_played') === '1';
 
-    if (overlay && !introPlayed && !reducedMotion) {
-        sessionStorage.setItem('laboe_intro_played', '1');
+    // 인트로는 매 로드마다 재생 (모션 최소화 설정 시에만 생략)
+    if (overlay && !reducedMotion) {
         if (lenis) lenis.stop();
         window.scrollTo(0, 0);
 
