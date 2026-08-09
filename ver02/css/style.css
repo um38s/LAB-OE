@@ -173,6 +173,8 @@ html:not(.js) #intro-overlay {
     z-index: 1500;
     pointer-events: none;
     will-change: transform;
+    /* JS가 위치 잡기 전 좌상단 플래시 방지 */
+    transform: translate3d(-100px, -100px, 0);
 }
 
 #cursor .cursor-dot {
@@ -194,10 +196,7 @@ html:not(.js) #intro-overlay {
     opacity: 0;
 }
 
-/* 터치 기기에서는 완전 비활성 */
-@media (hover: none), (pointer: coarse) {
-    #cursor { display: none; }
-}
+/* 터치 기기: 포인터는 터치 중에만 표시 (JS가 is-hidden 토글) */
 
 /* ---------- 호버 이미지 프리뷰 ---------- */
 #hover-preview {
@@ -505,9 +504,16 @@ html.js .scroll-indicator {
 .exhibition-list .details {
     font-size: 1.12rem;
     font-weight: 480;
+    font-variation-settings: 'wght' 480;
     line-height: 1.55;
     letter-spacing: -0.005em;
     word-break: keep-all;
+    transition: font-variation-settings 0.3s ease;
+}
+
+/* 호버/터치 근접 시 글자 웨이트 상승 */
+.exhibition-list li.is-hovered .details {
+    font-variation-settings: 'wght' 640;
 }
 
 /* 리스트 안 원본 이미지는 프리뷰 소스로만 사용 */

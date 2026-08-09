@@ -27,6 +27,7 @@ const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matc
 // 전역 마우스 좌표 (히어로/프리뷰/커서 공용)
 const mouse = { x: -9999, y: -9999 };
 let lastMouseMove = 0;
+let touchActive = false; // 모바일: 손가락이 화면에 닿아 있는 동안 true
 
 window.addEventListener('mousemove', (e) => {
     mouse.x = e.clientX;
@@ -131,7 +132,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function kineticTick(now) {
         if (!kineticOn || !heroVisible) return;
-        const idle = !isDesktop || (now - lastMouseMove > PARAMS.IDLE_DELAY);
+        // 데스크톱: 마우스 유휴 3초 후 웨이브 / 모바일: 터치 중엔 손끝 근접 반응, 평소엔 웨이브
+        const idle = isDesktop ? (now - lastMouseMove > PARAMS.IDLE_DELAY) : !touchActive;
         const t = now / 1000;
         const range = PARAMS.IDLE_WEIGHT_MAX - PARAMS.IDLE_WEIGHT_MIN;
 
@@ -308,7 +310,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function hidePreview() {
         if (!preview) return;
         previewActive = false;
-        if (cursorEl) cursorEl.classList.remove('is-hidden');
+        // 모바일에서는 터치 중일 때만 포인터 복귀 (터치가 끝났으면 숨김 유지)
+        if (cursorEl && (isDesktop || touchActive)) cursorEl.classList.remove('is-hidden');
         gsap.to(previewInner, { opacity: 0, scale: 0.9, duration: 0.25, ease: 'power2.out' });
         gsap.to(viewBtn, { scale: 0, duration: 0.2, ease: 'power2.in' });
     }
@@ -316,6 +319,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function clearRowStates() {
         document.querySelectorAll('.exhibition-list.is-dimmed').forEach((ul) => ul.classList.remove('is-dimmed'));
         document.querySelectorAll('.exhibition-list li.is-hovered').forEach((li) => li.classList.remove('is-hovered'));
+        document.querySelectorAll('.exhibition-list li.is-armed').forEach((li) => li.classList.remove('is-armed'));
     }
 
     if (isDesktop) {
@@ -360,28 +364,93 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // =====================================================
+    // 모바일: 손끝 추적 블루 포인터 + 드래그 중 근처 행 강조
+    // =====================================================
+    let lastTouchLi = null;
+
+    function highlightRowAtPoint(x, y) {
+        const el = document.elementFromPoint(x, y);
+        const li = el ? el.closest('.exhibition-list li') : null;
+        if (li === lastTouchLi) return;
+
+        // 이전 행 강조 해제 (2단계 탭으로 고정된 행은 유지)
+        if (lastTouchLi && !lastTouchLi.classList.contains('is-armed')) {
+            lastTouchLi.classList.remove('is-hovered');
+            const prevUl = lastTouchLi.closest('.exhibition-list');
+            if (prevUl && !prevUl.querySelector('li.is-hovered')) prevUl.classList.remove('is-dimmed');
+        }
+
+        if (li) {
+            li.classList.add('is-hovered');
+            const ul = li.closest('.exhibition-list');
+            if (ul) ul.classList.add('is-dimmed');
+        }
+        lastTouchLi = li;
+    }
+
+    if (!isDesktop && cursorEl) {
+        cursorEl.classList.add('is-hidden'); // 터치 전엔 숨김
+
+        const updateFromTouch = (e) => {
+            const t = e.touches[0];
+            if (!t) return;
+            mouse.x = t.clientX;
+            mouse.y = t.clientY;
+            lastMouseMove = performance.now();
+        };
+
+        window.addEventListener('touchstart', (e) => {
+            touchActive = true;
+            updateFromTouch(e);
+            // 포인터가 화면을 가로질러 날아오지 않게 터치 지점에서 시작
+            cursorPos.x = mouse.x;
+            cursorPos.y = mouse.y;
+            cursorEl.style.transform = `translate3d(${mouse.x.toFixed(1)}px, ${mouse.y.toFixed(1)}px, 0)`;
+            if (!previewActive) cursorEl.classList.remove('is-hidden');
+            highlightRowAtPoint(mouse.x, mouse.y);
+        }, { passive: true });
+
+        window.addEventListener('touchmove', (e) => {
+            updateFromTouch(e);
+            highlightRowAtPoint(mouse.x, mouse.y);
+        }, { passive: true });
+
+        const endTouch = () => {
+            touchActive = false;
+            cursorEl.classList.add('is-hidden');
+            if (lastTouchLi && !lastTouchLi.classList.contains('is-armed')) {
+                lastTouchLi.classList.remove('is-hovered');
+                const ul = lastTouchLi.closest('.exhibition-list');
+                if (ul && !ul.querySelector('li.is-hovered')) ul.classList.remove('is-dimmed');
+            }
+            lastTouchLi = null;
+        };
+        window.addEventListener('touchend', endTouch, { passive: true });
+        window.addEventListener('touchcancel', endTouch, { passive: true });
+    }
+
+    // =====================================================
     // 통합 rAF 루프: 키네틱 + 프리뷰 추적 + 커서 추적
     // =====================================================
     function masterTick(now) {
         kineticTick(now);
 
-        if (isDesktop) {
-            if (previewActive && preview) {
-                previewPos.x += (mouse.x - previewPos.x) * PARAMS.PREVIEW_LERP;
-                previewPos.y += (mouse.y - previewPos.y) * PARAMS.PREVIEW_LERP;
-                preview.style.transform =
-                    `translate3d(${(previewPos.x - 170).toFixed(1)}px, ${(previewPos.y - 113).toFixed(1)}px, 0)`;
-            }
-            if (cursorEl) {
-                const dx = mouse.x - cursorPos.x;
-                const dy = mouse.y - cursorPos.y;
-                // 수렴 후에는 쓰기 생략 (마우스 정지 시 프레임당 스타일 갱신 방지)
-                if (Math.abs(dx) > 0.05 || Math.abs(dy) > 0.05) {
-                    cursorPos.x += dx * PARAMS.CURSOR_LERP;
-                    cursorPos.y += dy * PARAMS.CURSOR_LERP;
-                    cursorEl.style.transform =
-                        `translate3d(${cursorPos.x.toFixed(1)}px, ${cursorPos.y.toFixed(1)}px, 0)`;
-                }
+        if (isDesktop && previewActive && preview) {
+            previewPos.x += (mouse.x - previewPos.x) * PARAMS.PREVIEW_LERP;
+            previewPos.y += (mouse.y - previewPos.y) * PARAMS.PREVIEW_LERP;
+            preview.style.transform =
+                `translate3d(${(previewPos.x - 170).toFixed(1)}px, ${(previewPos.y - 113).toFixed(1)}px, 0)`;
+        }
+        // 커서 도트: 데스크톱은 상시, 모바일은 터치 중에만 추적
+        if (cursorEl && (isDesktop || touchActive)) {
+            const dx = mouse.x - cursorPos.x;
+            const dy = mouse.y - cursorPos.y;
+            // 수렴 후에는 쓰기 생략 (포인터 정지 시 프레임당 스타일 갱신 방지)
+            if (Math.abs(dx) > 0.05 || Math.abs(dy) > 0.05) {
+                cursorPos.x += dx * PARAMS.CURSOR_LERP;
+                cursorPos.y += dy * PARAMS.CURSOR_LERP;
+                cursorEl.style.transform =
+                    `translate3d(${cursorPos.x.toFixed(1)}px, ${cursorPos.y.toFixed(1)}px, 0)`;
             }
         }
         requestAnimationFrame(masterTick);
@@ -487,6 +556,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const clearArmed = () => {
             if (!armedLi) return;
             armedLi.classList.remove('is-hovered');
+            armedLi.classList.remove('is-armed');
             const ul = armedLi.closest('.exhibition-list');
             if (ul) ul.classList.remove('is-dimmed');
             armedLi = null;
@@ -524,6 +594,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         armedLi = li;
                         armedLink = link;
                         li.classList.add('is-hovered');
+                        li.classList.add('is-armed');
                         const ul = li.closest('.exhibition-list');
                         if (ul) ul.classList.add('is-dimmed');
                         showPreviewAtRow(li, dataImg.split(',')[0].trim());
