@@ -1,0 +1,1065 @@
+:root {
+    --bg-color: #050505;
+    /* 아주 짙은 검은색 */
+    --text-primary: #f0f0f0;
+    --text-secondary: #888888;
+    --point-color: #F37021;
+    /* Hermes Orange */
+    --border-color: #222222;
+    --modal-bg: #000000;
+    --modal-overlay: rgba(255, 255, 255, 0.4);
+
+    --font-display: 'Outfit', sans-serif;
+    --font-body: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+}
+
+/* Light Theme Variables */
+[data-theme="light"] {
+    --bg-color: #f4f4f4;   /* 깔끔한 밝은 회색 바탕 */
+    --text-primary: #222222; /* 너무 진하지 않은 검정 */
+    --text-secondary: #777777; /* 중간 톤 회색 */
+    --point-color: #333333; /* 더 짙은 회색으로 섹션 제목 강조 */
+    --border-color: #dddddd;
+    --modal-bg: #ffffff;
+    --modal-overlay: rgba(0, 0, 0, 0.3);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html.lenis,
+html.lenis body {
+    height: auto;
+}
+
+.lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-weight: 400;
+    line-height: 1.6;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+/* =========================================
+   Theme Toggle Switch UI
+========================================= */
+.theme-toggle-wrapper {
+    position: fixed;
+    top: 2.2rem;
+    right: 4%;
+    z-index: 1100; 
+}
+
+.theme-toggle {
+    display: inline-block;
+    position: relative;
+    width: 72px; /* Back 버튼 문구 두께감을 맞추기 위해 가로 폭 균등 확장 */
+    height: 32px;
+    cursor: pointer;
+}
+
+.theme-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: transparent;
+    border: 1px solid var(--text-secondary);
+    border-radius: 34px;
+    transition: 0.4s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 8px;
+    box-sizing: border-box;
+}
+
+.toggle-slider::before {
+    position: absolute;
+    content: "";
+    height: 24px;
+    width: 24px;
+    left: 3px;
+    bottom: 3px;
+    background-color: var(--text-primary);
+    border-radius: 50%;
+    transition: 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    z-index: 2;
+}
+
+.theme-toggle input:checked + .toggle-slider::before {
+    transform: translateX(40px); /* 72px 너비에 맞게 이동 범위 오차 조정 */
+}
+
+.toggle-icon-sun, .toggle-icon-moon {
+    color: var(--text-secondary);
+    font-size: 13px;
+    z-index: 1;
+    transition: color 0.4s ease, opacity 0.4s ease;
+}
+
+/* Base states */
+.toggle-icon-sun { opacity: 0; }
+.toggle-icon-moon { opacity: 1; }
+
+/* Light Theme logic */
+[data-theme="light"] .toggle-icon-moon { opacity: 0; }
+[data-theme="light"] .toggle-icon-sun {
+    opacity: 1;
+    color: var(--bg-color); /* blends perfectly with slider knob */
+    z-index: 3; 
+}
+
+/* Dark Theme logic */
+[data-theme="dark"] .toggle-icon-sun { opacity: 0; }
+[data-theme="dark"] .toggle-icon-moon {
+    opacity: 1;
+    color: var(--bg-color);
+    z-index: 3;
+}
+
+.theme-toggle:hover .toggle-slider {
+    border-color: var(--text-primary);
+}
+
+/* Three.js Background */
+#canvas-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+/* Typography Basics */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--font-display);
+    font-weight: 300;
+    text-transform: uppercase;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: var(--point-color);
+}
+
+/* Sections */
+section {
+    padding: 10vh 5vw;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.section-title {
+    font-size: 2rem;
+    color: var(--point-color);
+    margin-bottom: 2.8rem; /* 기존 4rem에서 30% 축소 */
+    letter-spacing: 0.1em;
+}
+
+.about {
+    margin-top: 5rem;
+}
+
+/* =========================================
+   Philosophy Section Additional Utilities
+========================================= */
+.philosophy-content {
+    margin: 0 auto;
+    font-size: 1.5rem;
+    font-weight: 300;
+    line-height: 1.8;
+    word-break: keep-all;
+    padding: 5vh 0 2rem;
+    max-width: 1100px;
+}
+
+.philosophy-main-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--point-color);
+    margin-bottom: 2rem;
+    letter-spacing: -0.02em;
+}
+
+.philosophy-top-text {
+    margin-bottom: 1.5rem;
+}
+
+.philosophy-sub-text {
+    color: var(--text-secondary);
+    margin-bottom: 3.5rem;
+}
+
+.philosophy-highlight-wrapper {
+    display: inline-block;
+    margin-top: 0.3rem;
+}
+
+.highlight {
+    color: var(--point-color);
+    font-weight: 700;
+    display: inline-block;
+    padding: 0 0.6em;
+}
+
+.philosophy-diagram {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 3rem;
+    margin: 3rem 0;
+}
+
+.diagram-group {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.circle {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    font-weight: 500;
+    line-height: 1.2;
+    text-align: center;
+}
+
+.circle span {
+    font-size: 0.85rem;
+    font-weight: 400;
+    font-family: var(--font-display);
+    margin-top: 0.3rem;
+    letter-spacing: 0.05em;
+    text-transform: lowercase;
+}
+
+.circle-blue {
+    border: 2px solid #00c3ff;
+    color: #00c3ff;
+}
+
+.circle-white {
+    position: relative;
+    border: 2px solid rgba(255, 255, 255, 0.2); /* 은은한 기본 테두리 */
+    color: #ffffff;
+    overflow: hidden; /* pseudo-element가 원 밖으로 나가지 않도록 */
+    transition: color 0.5s ease, border-color 0.5s ease;
+}
+
+/* 회전하는 빛 효과를 위한 가상 요소 */
+.circle-white::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(
+        transparent 0%, 
+        transparent 50%, 
+        rgba(255, 255, 255, 0.2) 72%,
+        rgba(255, 255, 255, 0.75) 92%,
+        rgba(255, 255, 255, 1.0) 100%
+    );
+    animation: rotateGlow 12s linear infinite; /* 더 느리게 (기존 7s -> 12s) */
+    z-index: -1;
+}
+
+/* 텍스트가 가려지지 않게 내부 컨텐츠 분리용 (옵션이나 현재 HTML 구조상 배경 역할만 하므로 z-index 세팅) */
+.circle-white::after {
+    content: '';
+    position: absolute;
+    inset: 2px; /* 테두리 두께만큼 안쪽으로 */
+    background: var(--bg-color); /* 배경색상과 동일하게 맞춰서 안쪽을 가림 */
+    border-radius: 50%;
+    z-index: -1;
+    transition: background 0.5s ease;
+}
+
+/* Light Theme overrides for Diagram */
+[data-theme="light"] .circle-white {
+    border-color: rgba(0, 0, 0, 0.30); /* 0.15 -> 0.30: 조금 더 진한 회색 테두리 */
+    color: var(--text-primary);
+}
+
+[data-theme="light"] .circle-white::before {
+    background: conic-gradient(
+        transparent 0%, 
+        transparent 50%, 
+        rgba(0, 0, 0, 0.1) 72%,
+        rgba(0, 0, 0, 0.3) 92%,
+        rgba(0, 0, 0, 0.6) 100%
+    );
+}
+
+@keyframes rotateGlow {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* 각각의 원에 다른 속도와 시작 각도(delay)를 주어 완전히 비대칭적으로 자연스럽게 움직이게 조정 */
+.diagram-group:nth-child(1) .circle:nth-child(1)::before {
+    animation-duration: 11s;
+    animation-delay: 0s;
+}
+.diagram-group:nth-child(1) .circle:nth-child(3)::before {
+    animation-duration: 14s;
+    animation-delay: -4s; /* 다른 시작 각도 */
+}
+.diagram-group:nth-child(2) .circle:nth-child(1)::before {
+    animation-duration: 13s;
+    animation-delay: -7s; /* 다른 시작 각도 */
+}
+.diagram-group:nth-child(2) .circle:nth-child(2)::before {
+    animation-duration: 10s;
+    animation-delay: -2s; /* 다른 시작 각도 */
+}
+
+.cross {
+    color: #ffffff;
+    font-size: 2rem;
+    font-weight: 300;
+}
+
+.cross.invisible {
+    opacity: 0;
+    pointer-events: none;
+    user-select: none;
+}
+
+[data-theme="light"] .cross {
+    color: var(--text-primary);
+}
+
+@media (max-width: 768px) {
+    .philosophy-diagram {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2rem;
+    }
+    
+    .circle {
+        width: 100px;
+        height: 100px;
+        font-size: 1.1rem;
+    }
+}
+
+/* Hero Section */
+.hero {
+    position: relative;
+}
+
+.hero-content {
+    mix-blend-mode: difference;
+    /* WebGL 요소와 겹칠 때 글씨를 보이게 해줌 */
+    transition: mix-blend-mode 0.3s ease;
+}
+
+[data-theme="light"] .hero-content {
+    mix-blend-mode: normal; /* 라이트 모드에서는 글자색 반전 오류를 막기 위해 일반 모드로 전환 */
+}
+
+.hero-title {
+    font-size: clamp(3rem, 8vw, 10rem);
+    line-height: 1.0;
+    letter-spacing: -0.02em;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.hero-title-name {
+    display: inline-block;
+    transform: translateY(-2vh); /* 위쪽으로 2% 이동 (-3vh에서 1% 낮춰 내림) */
+    font-size: 0.85em; /* 15% smaller than the parent (LAB OE) */
+}
+
+.hero-subtitle {
+    font-family: var(--font-display);
+    font-size: clamp(1rem, 2vw, 1.5rem);
+    color: var(--point-color);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    font-weight: 300;
+    margin-left: 0.3em; /* 큰 제목(L, K)과의 시각적 수직 정렬을 맞추기 위한 미세 이동 */
+}
+
+/* Scroll Indicator */
+.scroll-indicator {
+    position: absolute;
+    bottom: 5vh;
+    left: 5vw;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    color: var(--text-secondary);
+}
+
+.scroll-indicator .line {
+    width: 60px;
+    height: 1px;
+    background-color: #333;
+    position: relative;
+    overflow: hidden;
+}
+
+.scroll-indicator .line::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--point-color);
+    transform: translateX(-100%);
+    animation: scrollLine 2s infinite cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+@keyframes scrollLine {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    50% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* Works Placeholder */
+.work-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10vh;
+}
+
+@media (min-width: 768px) {
+    .work-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 5vw;
+    }
+
+    .work-item:nth-child(even) {
+        margin-top: 15vh;
+        /* 지그재그 레이아웃 효과 */
+    }
+}
+
+.work-text-only {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 5vh 0;
+}
+
+.temp-message {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    letter-spacing: 0.1em;
+    font-style: italic;
+}
+
+.work-image-placeholder {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background-color: #111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+    font-family: var(--font-display);
+    margin-bottom: 1.5rem;
+    transition: transform 0.5s ease;
+}
+
+.work-item:hover .work-image-placeholder {
+    transform: scale(1.02);
+}
+
+.work-title {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    transition: color 0.3s ease;
+}
+
+.work-item:hover .work-title {
+    color: var(--point-color);
+}
+
+.work-year {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.exhibition-list {
+    list-style: none;
+    border-top: 1px solid var(--border-color);
+    margin-top: 0; 
+    transition: border-color 0.5s ease;
+}
+
+.exhibition-list li {
+    padding: 0;
+    border-bottom: 1px solid var(--border-color);
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.5s ease;
+}
+
+.exhibition-list li a,
+.exhibition-list li .item-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1.94rem 2%; /* 기존의 2.0rem에서 약 3% 추가 축소 */
+    width: 100%;
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.3s ease, background-color 0.3s ease, transform 0.3s ease;
+}
+
+.exhibition-list img {
+    display: none;
+}
+
+/* Hover effect background fill */
+.exhibition-list li::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(243, 112, 33, 0.05);
+    /* Very subtle orange */
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    z-index: -1;
+}
+
+.exhibition-list li:hover::before {
+    transform: translateY(0);
+}
+
+.exhibition-list li:hover {
+    color: var(--point-color);
+}
+
+[data-theme="light"] .exhibition-list li::before {
+    background-color: rgba(0, 0, 0, 0.03); /* 라이트 모드에서는 옅은 회색 적용 */
+}
+
+.exhibition-list li a:hover {
+    color: var(--point-color);
+}
+
+.exhibition-list li a:active,
+.exhibition-list li .item-content:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
+    background-color: rgba(243, 112, 33, 0.08); /* 기존 오렌지 점유율 */
+}
+
+[data-theme="light"] .exhibition-list li a:active,
+[data-theme="light"] .exhibition-list li .item-content:active {
+    background-color: rgba(0, 0, 0, 0.06); /* 라이트 모드에서는 클릭 시 짙은 회색 적용 */
+}
+
+/* 이미지 있는 항목 (링크): 오른쪽에 미세한 점 인디케이터 */
+.exhibition-list li:has(> a[data-img]) .year::after {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--point-color);
+    opacity: 0.85;
+    margin-left: 0.6rem;
+    vertical-align: middle;
+    transition: opacity 0.3s ease;
+}
+
+/* 호버 시 인디케이터 더 밝게 */
+.exhibition-list li:has(> a[data-img]):hover .year::after {
+    opacity: 1;
+}
+
+/* 이미지 없는 항목 (div): 약간 낮은 불투명도로 구분 */
+.exhibition-list li:has(> .item-content) {
+    opacity: 0.65;
+}
+
+.exhibition-list li:has(> .item-content):hover {
+    opacity: 1;
+}
+
+@media (min-width: 768px) {
+    .exhibition-list li a,
+    .exhibition-list li .item-content {
+        flex-direction: row;
+        align-items: baseline;
+    }
+}
+
+/* =========================================
+   Image Viewer Modal
+========================================= */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--modal-bg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, background-color 0.5s ease;
+}
+
+.modal.show {
+    opacity: 1;
+    pointer-events: auto; /* 마우스 이벤트 활성화 */
+}
+
+.modal-content {
+    width: 69vw; /* 60vw -> 69vw (1.15배) */
+    height: 69vh; /* 60vh -> 69vh (1.15배) */
+    object-fit: contain;
+    transform: scale(0.95);
+    transition: transform 0.3s ease;
+    margin-top: 8vh; /* 다시 위로 6% (6vh) 이동 (초기 -7vh 기준 총 15% 하향 상태) */
+    margin-left: 4vw; /* 오른쪽으로 3% (3vw) 이동 (총 4vw 이동, 우측으로 4% 편중) */
+}
+
+.modal.show .modal-content {
+    transform: scale(1);
+}
+
+/* 전시별 개별 위치 조정 */
+#image-modal.modal-m17_001 .modal-content {
+    margin-top: 8vh; /* 수원야행: 현재 상태 유지 (위로 6%) */
+}
+
+#image-modal.modal-m7_001 .modal-content {
+    margin-top: 11vh; /* 강원랜드: 현재 8vh에서 3% (3vh) 하향 */
+}
+
+.modal-body-wrapper {
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    position: relative; 
+    z-index: 1;
+}
+
+#modal-particle-canvas {
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    pointer-events: none; 
+    z-index: 0;
+}
+
+#modal-indicators {
+    position: absolute;
+    top: 11vh; /* 다시 위로 3% (3vh) 이동 (총 11vh, 이미지 상단과 정렬) */
+    left: 50%;
+    transform: translateX(-50%);
+    margin-left: 3vw; /* 사용자의 요청에 맞춰 3vw로 미세 조정 */
+    display: flex;
+    gap: 0.8rem;
+    z-index: 1001;
+    padding-bottom: 0; 
+}
+
+.indicator-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+[data-theme="light"] .indicator-dot {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.indicator-dot:hover {
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+[data-theme="light"] .indicator-dot:hover {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.indicator-dot.active {
+    background-color: var(--point-color);
+    transform: scale(1.3);
+}
+
+.close-modal {
+    position: absolute;
+    top: 6.5rem; /* 기존보다 약 10% 더 여유를 두고 밑으로 띄움 */
+    right: 4%;
+    width: 72px; /* 테마 토글 스위치 사이즈와 똑같이 맞춤 (72px) */
+    height: 32px; /* 테마 토글 스위치 사이즈와 똑같이 맞춤 */
+    box-sizing: border-box;
+    padding: 0;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 1001;
+    font-family: Pretendard, sans-serif;
+    border: 1px solid var(--modal-overlay);
+    border-radius: 50px;
+    background: transparent;
+}
+
+.close-modal:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.8);
+}
+
+.close-modal span {
+    font-size: 0.72rem; /* 72px 가로 크기 안에 '( Back )' 문구 회복 */
+    font-weight: 300;
+    letter-spacing: 0.05em;
+}
+
+.close-modal .icon-bracket {
+    font-size: 0.8rem;
+    font-weight: 300;
+    position: relative;
+    top: -1px;
+}
+
+.close-modal:hover {
+    color: var(--point-color);
+}
+
+@media (max-width: 768px) {
+    .theme-toggle-wrapper {
+        top: 1.2rem;
+        right: 5%;
+        transform: scale(0.85); 
+        transform-origin: right top;
+    }
+    .hero-title {
+        font-size: clamp(2.8rem, 12vw, 5.5rem);
+        word-break: keep-all; 
+    }
+    .hero-subtitle {
+        font-size: 0.9rem;
+    }
+    .section-title {
+        font-size: 1.5rem;
+    }
+    .exhibition-list .year {
+        min-width: auto;
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+    }
+    .exhibition-list li a, .exhibition-list li .item-content {
+        flex-direction: column;
+        gap: 0.5rem;
+        padding: 1.5rem 0;
+    }
+    /* Set Mobile modal sizing to guarantee fitting */
+    .modal-content {
+        width: 95vw;
+        height: auto;
+        max-height: 65vh;
+        margin-left: 0;
+        margin-top: 0;
+        transform: scale(0.95);
+    }
+    #image-modal.modal-m17_001 .modal-content,
+    #image-modal.modal-m7_001 .modal-content {
+        margin-top: 0;
+    }
+    .modal-indicators {
+        top: 85vh; /* move indicators below explicitly in mobile */
+        margin-left: 0;
+    }
+    .close-modal {
+        top: 5.2rem; /* 모바일 기준 동일하게 10% 하강 조정 */
+        right: 5%;
+        transform: scale(0.85); /* 위쪽 테마 토글 스위치와 완전히 동일하게 스케일 축소 */
+        transform-origin: right top;
+    }
+    .close-modal span {
+        display: inline-block; /* 크기 강제 이후로는 숨길 필요 없음 */
+        font-size: 0.65rem;
+    }
+}
+
+.exhibition-list .year {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    min-width: 220px;
+    font-weight: 300;
+}
+
+.exhibition-list .details {
+    font-size: 1.1rem;
+    line-height: 1.5;
+    font-weight: 300;
+}
+
+/* Footer */
+.footer {
+    padding: 4rem 0;
+    text-align: center;
+    border-top: 1px solid #222;
+}
+
+.footer-links {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.contact-link {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.contact-link:hover {
+    color: var(--point-color);
+}
+
+.sns-links {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.sns-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
+    transition: color 0.3s ease;
+}
+
+.sns-links a:hover {
+    color: var(--text-primary);
+}
+
+.sns-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0%;
+    height: 1px;
+    background-color: var(--point-color);
+    transition: width 0.3s ease;
+}
+
+.sns-links a:hover {
+    color: var(--point-color);
+}
+
+.sns-links a:hover::after {
+    width: 100%;
+}
+
+.icon-gray {
+    color: #999999;
+    font-size: 1.2rem;
+    margin-right: 0.3rem;
+    transition: color 0.3s ease;
+}
+
+.sns-links a:hover .highlight {
+    color: var(--point-color);
+    font-weight: 700;
+    margin: 0 5%;
+}
+
+.copyright {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-family: var(--font-display);
+    letter-spacing: 0.05em;
+}
+
+/* =========================================
+   Modal YouTube Link
+========================================= */
+.modal-youtube-link {
+    display: none; /* 기본적으로 숨김, 로직에서 필요 시 노출 */
+    color: var(--text-primary);
+    margin-top: calc(1.5rem + 5vh - 4px); /* 총 4px 위로 조정 */
+    margin-left: 4px; /* 오른쪽으로 4px 위치 유지 */
+    text-decoration: none;
+    font-size: 1.1rem;
+    position: relative;
+    padding-bottom: 4px;
+    transition: color 0.3s ease;
+}
+
+/* 2026 해치마당: 이미지(margin-left: 4vw)와 동일하게 유튜브 링크 가로 중앙 정렬 */
+#image-modal.modal-001 .modal-youtube-link {
+    margin-left: 4vw;
+}
+
+/* 모바일에서는 이미지 margin-left가 0이므로 링크도 기본값 유지 */
+@media (max-width: 768px) {
+    #image-modal.modal-001 .modal-youtube-link {
+        margin-left: 4px;
+    }
+}
+
+.modal-youtube-link i {
+    margin-right: 8px;
+    font-size: 1.2rem;
+}
+
+.modal-youtube-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: var(--text-secondary);
+    animation: blinkUnderline 1.5s infinite alternate; /* 깜빡이는 밑줄, 더 천천히 */
+    transition: background-color 0.3s ease;
+}
+
+[data-theme="dark"] .modal-youtube-link::after {
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+.modal-youtube-link:hover {
+    color: var(--point-color);
+}
+
+.modal-youtube-link:hover::after {
+    background-color: var(--point-color);
+}
+
+@keyframes blinkUnderline {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+/* =========================================
+   Modal Navigation Arrows
+========================================= */
+.modal-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 3rem;
+    cursor: pointer;
+    z-index: 1002;
+    padding: 1rem 3vw;
+    transition: color 0.3s ease, transform 0.3s ease;
+    display: none; /* hidden by default */
+}
+
+.modal-nav:hover {
+    color: rgba(255, 255, 255, 0.9);
+    transform: translateY(-50%) scale(1.1);
+}
+
+[data-theme="light"] .modal-nav {
+    color: rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="light"] .modal-nav:hover {
+    color: rgba(0, 0, 0, 0.8);
+}
+
+.modal-nav.prev-arrow {
+    left: 0;
+}
+
+.modal-nav.next-arrow {
+    right: 0;
+}
+
+@media (max-width: 768px) {
+    .modal-nav {
+        font-size: 2rem;
+        padding: 1rem 4vw;
+    }
+}

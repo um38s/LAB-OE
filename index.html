@@ -8,60 +8,65 @@
 
     <script>
         /**
-         * Theme Initialization:
-         * This script runs immediately to set the data-theme attribute on the <html> element.
-         * Doing this in the head prevents "Flash of Unstyled Content" (FOUC) and ensures
-         * that subsequent scripts (like the particle engine) know the correct theme from the start.
+         * 테마 초기화: <head>에서 즉시 실행해 FOUC 방지.
+         * 저장값 > prefers-color-scheme 감지 > 기본 라이트 (명세 1-3)
          */
-        (function() {
+        (function () {
+            document.documentElement.classList.add('js');
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme) {
                 document.documentElement.setAttribute('data-theme', savedTheme);
-            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
-                document.documentElement.setAttribute('data-theme', 'light');
-            } else {
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
                 document.documentElement.setAttribute('data-theme', 'dark');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
             }
         })();
     </script>
 
-    <!-- Fonts: Outfit (Display/English) & Pretendard (Korean/Body) -->
+    <!-- Fonts: Inter Variable (wght 100–900) + Pretendard Variable -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" as="style" crossorigin
-        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" crossorigin
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
 
-    <!-- FontAwesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css?v=20260810a">
 
-    <link rel="stylesheet" href="css/style.css">
-
-    <!-- GSAP for animations -->
+    <!-- GSAP + ScrollTrigger -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 
-    <!-- Lenis for smooth scrolling -->
+    <!-- Lenis smooth scroll -->
     <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
-
-    <!-- Three.js for WebGL Background -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
 </head>
 
 <body>
-    <!-- Theme Toggle (Light/Dark Mode) -->
-    <div class="theme-toggle-wrapper">
-        <label class="theme-toggle" for="theme-switch">
-            <input type="checkbox" id="theme-switch" aria-label="Toggle Theme">
-            <div class="toggle-slider">
-                <i class="fas fa-sun toggle-icon-sun"></i>
-                <i class="fas fa-moon toggle-icon-moon"></i>
-            </div>
-        </label>
-    </div>
+    <!-- 최초 로드 인트로: 곡선 오버레이 (세션당 1회) -->
+    <div id="intro-overlay" aria-hidden="true"></div>
 
-    <!-- Three.js Canvas Container -->
-    <div id="canvas-container"></div>
+    <!-- 상단 네비게이션 -->
+    <header class="site-header">
+        <a class="site-mark" href="#">&copy; LAB OE</a>
+        <button id="theme-toggle" aria-label="테마 전환">
+            <svg class="icon-sun" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+            <svg class="icon-moon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        </button>
+    </header>
+
+    <!-- 커스텀 커서 (데스크톱 전용) -->
+    <div id="cursor" aria-hidden="true"><div class="cursor-dot"></div></div>
+
+    <!-- 리스트 호버 이미지 프리뷰 (데스크톱 전용) -->
+    <div id="hover-preview" aria-hidden="true">
+        <div class="preview-inner">
+            <img id="hover-preview-img" alt="" decoding="async">
+            <span class="view-btn">View</span>
+        </div>
+    </div>
 
     <main id="smooth-wrapper">
         <div id="smooth-content">
@@ -70,7 +75,7 @@
             <section class="hero">
                 <div class="hero-content">
                     <h1 class="hero-title">LAB OE<br><span class="hero-title-name">KIM YOUNG TAE</span></h1>
-                    <p class="hero-subtitle">media artist & exhibition designer</p>
+                    <p class="hero-subtitle">media artist &amp; exhibition designer</p>
                 </div>
                 <div class="scroll-indicator">
                     <span>SCROLL</span>
@@ -87,7 +92,7 @@
                     <p class="philosophy-sub-text">[사물] + [빛]을 주제로 비물리적 조형 요소와 미디어 매체를 결합한 콘텐츠 작품을 진행하고 있는<br>
                         <span class="philosophy-highlight-wrapper">미디어 아트 그룹<span class="highlight">LAB OE</span>입니다.</span>
                     </p>
-                    
+
                     <div class="philosophy-diagram">
                         <div class="diagram-group">
                             <div class="circle circle-white">공간</div>
@@ -130,7 +135,7 @@
 
             <!-- Museum & Exhibition Space Design Section -->
             <section class="about section-exhibition">
-                <h2 class="section-title">MUSEUM & EXHIBITION SPACE DESIGN</h2>
+                <h2 class="section-title">MUSEUM &amp; EXHIBITION SPACE DESIGN</h2>
                 <ul class="exhibition-list">
                     <li>
                         <a href="#" data-img="img/s1_01.png,img/s1_02.png,img/s1_03.png,img/s1_04.png">
@@ -207,8 +212,8 @@
                 <div class="footer-links">
                     <a href="mailto:um38ss@daum.net" class="contact-link" aria-label="Send email to um38ss@daum.net">um38ss@daum.net</a>
                     <div class="sns-links">
-                        <a href="https://www.instagram.com/lab_oe/" target="_blank"><i class="fab fa-instagram icon-gray"></i> Instagram</a>
-                        <a href="https://www.youtube.com/@_laboe4430/shorts" target="_blank"><i class="fab fa-youtube icon-gray"></i> YouTube</a>
+                        <a href="https://www.instagram.com/lab_oe/" target="_blank" rel="noopener">Instagram&nbsp;↗</a>
+                        <a href="https://www.youtube.com/@_laboe4430/shorts" target="_blank" rel="noopener">YouTube&nbsp;↗</a>
                     </div>
                 </div>
                 <p class="copyright">© 2026 KIM YOUNG TAE. All rights reserved.</p>
@@ -219,25 +224,21 @@
 
     <!-- Image Modal -->
     <div id="image-modal" class="modal">
-        <canvas id="modal-particle-canvas"></canvas>
         <div class="close-modal">
             <span class="icon-bracket">(</span>
             <span>Back</span>
             <span class="icon-bracket">)</span>
         </div>
         <div class="modal-indicators" id="modal-indicators"></div>
-        <button class="modal-nav prev-arrow" id="modal-prev" aria-label="Previous image"><i class="fas fa-chevron-left"></i></button>
-        <button class="modal-nav next-arrow" id="modal-next" aria-label="Next image"><i class="fas fa-chevron-right"></i></button>
+        <button class="modal-nav prev-arrow" id="modal-prev" aria-label="Previous image">←</button>
+        <button class="modal-nav next-arrow" id="modal-next" aria-label="Next image">→</button>
         <div class="modal-body-wrapper">
-            <img class="modal-content" id="modal-img">
-            <a id="modal-youtube" href="#" target="_blank" class="modal-youtube-link">
-                <i class="fab fa-youtube"></i> youtube
-            </a>
+            <img class="modal-content" id="modal-img" alt="">
+            <a id="modal-youtube" href="#" target="_blank" rel="noopener" class="modal-youtube-link">YouTube&nbsp;↗</a>
         </div>
     </div>
 
-    <script src="js/three-bg.js"></script>
-    <script src="js/main.js"></script>
+    <script src="js/main.js?v=20260810a"></script>
 </body>
 
 </html>
