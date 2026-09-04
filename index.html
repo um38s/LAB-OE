@@ -34,7 +34,7 @@
     <link rel="stylesheet" crossorigin
         href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
 
-    <link rel="stylesheet" href="css/style.css?v=20260810a">
+    <link rel="stylesheet" href="css/style.css?v=20260905a">
 
     <!-- GSAP + ScrollTrigger -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
@@ -95,23 +95,33 @@
 
                     <div class="philosophy-diagram">
                         <div class="diagram-group">
-                            <div class="circle circle-white">공간</div>
-                            <div class="cross">✕</div>
-                            <div class="circle circle-white">다양성</div>
+                            <div class="circle circle-white" style="--orbit-start: 318deg; --orbit-dur: 17s;">공간<span class="orbit" aria-hidden="true"><span class="orbit-dot"></span></span></div>
+                            <div class="cross invisible" aria-hidden="true">✕</div>
+                            <div class="circle circle-white" style="--orbit-start: 96deg; --orbit-dur: 23s;">다양성<span class="orbit" aria-hidden="true"><span class="orbit-dot"></span></span></div>
                         </div>
                         <div class="diagram-group">
-                            <div class="circle circle-white">感興<br><span>inspiration</span></div>
+                            <div class="circle circle-white" style="--orbit-start: 205deg; --orbit-dur: 14s;">感興<br><span>inspiration</span><span class="orbit" aria-hidden="true"><span class="orbit-dot"></span></span></div>
                             <div class="cross invisible" aria-hidden="true">✕</div>
-                            <div class="circle circle-white">審美性<br><span>aesthetic</span></div>
+                            <div class="circle circle-white" style="--orbit-start: 30deg; --orbit-dur: 20s;">審美性<br><span>aesthetic</span><span class="orbit" aria-hidden="true"><span class="orbit-dot"></span></span></div>
                         </div>
                     </div>
                 </div>
+            </section>
+
+            <!-- Identity Statement: Exhibition Design Museum ✕ Media Art -->
+            <section class="about section-statement" aria-label="Exhibition Design ✕ Media Art">
+                <p class="statement-line">
+                    <span class="statement-term">Exhibition Design</span>
+                    <span class="statement-cross" aria-hidden="true">✕</span>
+                    <span class="statement-term">Media Art</span>
+                </p>
             </section>
 
             <!-- Media Art Exhibitions Section -->
             <section class="about">
                 <h2 class="section-title">MEDIA ART EXHIBITIONS</h2>
                 <ul class="exhibition-list">
+                    <li><a href="#" data-img="img/26_s_01.png,img/26_s_02.png,img/26_s_03.png,img/26_s_04.png"><span class="year">2026</span><span class="details">‘2026 수원 국가유산 야행’ 화홍문 미디어아트 전시<br>수원, 한국</span><img src="img/26_s_01.png" alt="Exhibition Image" class="hover-img" loading="lazy"></a></li>
                     <li><a href="#" data-img="img/2026/001.png,img/2026/002.png,img/2026/003.png" data-youtube="https://www.youtube.com/watch?v=doqYTsF8UA4"><span class="year">2026</span><span class="details">‘2026 해치마당 미디어월 봄 전시’ 전문작가 기획전 전시<br>서울, 한국</span><img src="img/2026/001.png" alt="Exhibition Image" class="hover-img" loading="lazy"></a></li>
                     <li><a href="#" data-img="img/IMG_001.png" data-youtube="https://youtu.be/IWG60YMttEs"><span class="year">2025</span><span class="details">‘2025 서울라이트 광화문’ 세종 파빌리온 초청작가 및 전시<br>서울, 한국</span><img src="img/IMG_001.png" alt="Exhibition Image" class="hover-img" loading="lazy"></a></li>
                     <li><a href="#" data-img="img/m2_001.png"><span class="year">2025</span><span class="details">‘2025 수원화성 미디어아트’ 전시 참여작가 및 전시<br>수원, 한국</span><img src="img/m2_001.png" alt="Exhibition Image" class="hover-img" loading="lazy"></a></li>
@@ -238,7 +248,7 @@
         </div>
     </div>
 
-    <script src="js/main.js?v=20260810b"></script>
+    <script src="js/main.js?v=20260905a"></script>
 </body>
 
 </html>

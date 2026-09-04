@@ -472,6 +472,69 @@ html.js .scroll-indicator {
     user-select: none;
 }
 
+/* 궤도 점 — 각 원의 테두리 선 위를 서로 다른 속도/위상으로 공전.
+   원 중심에 0×0 회전축을 두고 점을 반지름(--orbit-r)만큼 밀어내는 방식 —
+   .circle span 공통 스타일(마진 등)의 간섭을 받지 않음 */
+.circle {
+    position: relative;
+    --orbit-r: 64px; /* = 원 반지름 */
+}
+
+.circle .orbit {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    margin: 0;
+    pointer-events: none;
+    animation: orbit-spin var(--orbit-dur, 18s) linear infinite;
+}
+
+.circle .orbit-dot {
+    position: absolute;
+    top: calc(var(--orbit-r) * -1 - 3px);
+    left: -3px;
+    width: 6px;
+    height: 6px;
+    margin: 0;
+    border-radius: 50%;
+    background-color: var(--text-muted);
+}
+
+@keyframes orbit-spin {
+    from { transform: rotate(var(--orbit-start, 0deg)); }
+    to   { transform: rotate(calc(var(--orbit-start, 0deg) + 360deg)); }
+}
+
+/* ---------- 아이덴티티 스테이트먼트 (Exhibition Design ✕ Media Art) ---------- */
+.section-statement {
+    margin-top: calc(var(--section-gap) * -0.35); /* 철학 섹션 쪽으로 약간 끌어올림 */
+}
+
+.statement-line {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: clamp(1.4rem, 3vw, 2.8rem);
+    word-break: keep-all;
+}
+
+.statement-term {
+    font-size: clamp(1.5rem, 2.8vw, 2.4rem);
+    font-weight: 560;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    white-space: nowrap;
+}
+
+.statement-cross {
+    font-size: clamp(1.2rem, 1.8vw, 1.6rem);
+    font-weight: 600;
+    color: var(--text);
+    opacity: 0.78; /* 짙은 회색 — 다크 모드에서도 톤 유지 */
+}
+
 /* ---------- 전시 리스트 ---------- */
 .exhibition-list {
     list-style: none;
@@ -768,6 +831,17 @@ html.js .scroll-indicator {
         width: 100px;
         height: 100px;
         font-size: 0.92rem;
+        --orbit-r: 50px;
+    }
+
+    .statement-line {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .statement-term {
+        font-size: 1.35rem;
     }
 
     .footer-links {

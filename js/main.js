@@ -252,7 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        gsap.utils.toArray('.philosophy-content, .footer').forEach((el) => {
+        gsap.utils.toArray('.philosophy-content, .statement-line, .footer').forEach((el) => {
             gsap.from(el, {
                 y: 24,
                 opacity: 0,
@@ -278,6 +278,71 @@ document.addEventListener('DOMContentLoaded', () => {
                 }),
             });
         });
+    }
+
+    // =====================================================
+    // 씬 스냅: 히어로 ↔ 철학(스테이트먼트 포함) 두 장면만 스냅.
+    // 철학 장면을 지나 리스트 구간부터는 자유 스크롤.
+    // =====================================================
+    const philSection = document.querySelector('.section-philosophy');
+    if (philSection && !reducedMotion) {
+        const SNAP = {
+            DELAY: 140,      // 스크롤 멈춤 감지 대기(ms)
+            DURATION: 1.0,   // 스냅 이동 시간(s)
+            OFFSET: 110,     // 철학 섹션 타이틀 상단 여백(px)
+            EPSILON: 4,      // 이미 정착한 것으로 보는 오차(px)
+            BIAS: 0.2,       // 진행 방향으로 20%만 넘어가면 다음 장면으로
+        };
+        let snapTimer = null;
+        let snapping = false;
+        let lastY = window.scrollY;
+        let dirDown = true;
+
+        const philY = () => Math.max(0, philSection.offsetTop - SNAP.OFFSET);
+
+        const scrollToY = (y) => {
+            snapping = true;
+            if (lenis) {
+                lenis.scrollTo(y, {
+                    duration: SNAP.DURATION,
+                    easing: (t) => 1 - Math.pow(1 - t, 3),
+                    lock: true,
+                    onComplete: () => { snapping = false; },
+                });
+                // onComplete 미발화 대비 안전 해제
+                setTimeout(() => { snapping = false; }, SNAP.DURATION * 1000 + 300);
+            } else {
+                window.scrollTo({ top: y, behavior: 'smooth' });
+                setTimeout(() => { snapping = false; }, 700);
+            }
+        };
+
+        const trySnap = () => {
+            if (snapping) return;
+            const y = window.scrollY;
+            const p = philY();
+            // 철학 장면을 지나면(리스트 구간) 스냅 없음
+            if (y > p + SNAP.EPSILON) return;
+            // 이미 장면에 정착한 상태면 무시
+            if (y <= SNAP.EPSILON || Math.abs(y - p) <= SNAP.EPSILON) return;
+            // 진행 방향 쪽으로 BIAS만큼 넘었으면 다음 장면, 아니면 원래 장면 유지
+            const target = dirDown
+                ? (y > p * SNAP.BIAS ? p : 0)
+                : (y < p * (1 - SNAP.BIAS) ? 0 : p);
+            scrollToY(target);
+        };
+
+        const onScroll = () => {
+            const y = window.scrollY;
+            if (Math.abs(y - lastY) > 0.5) dirDown = y > lastY;
+            lastY = y;
+            if (snapping) return;
+            clearTimeout(snapTimer);
+            snapTimer = setTimeout(trySnap, SNAP.DELAY);
+        };
+
+        if (lenis) lenis.on('scroll', onScroll);
+        else window.addEventListener('scroll', onScroll, { passive: true });
     }
 
     // =====================================================
