@@ -382,6 +382,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const previewPos = { x: 0, y: 0 };
 
+    // 프리뷰 축소본 경로: img/a.png → img/thumbs/a.webp (원본은 모달에서만 로드)
+    function thumbSrc(src) {
+        return src.replace(/^img\//, 'img/thumbs/').replace(/\.[A-Za-z]+$/, '.webp');
+    }
+
     function showPreview(src) {
         if (!preview || !previewImg) return;
         if (previewImg.getAttribute('src') !== src) previewImg.setAttribute('src', src);
@@ -421,7 +426,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const ul = li.closest('.exhibition-list');
                 if (ul) ul.classList.add('is-dimmed');
                 li.classList.add('is-hovered');
-                if (firstImg) showPreview(firstImg);
+                if (firstImg) showPreview(thumbSrc(firstImg));
             });
 
             li.addEventListener('mouseleave', () => {
@@ -686,7 +691,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         li.classList.add('is-armed');
                         const ul = li.closest('.exhibition-list');
                         if (ul) ul.classList.add('is-dimmed');
-                        showPreviewAtRow(li, dataImg.split(',')[0].trim());
+                        showPreviewAtRow(li, thumbSrc(dataImg.split(',')[0].trim()));
                         return;
                     }
                     // 같은 행 두 번째 탭: 모달
