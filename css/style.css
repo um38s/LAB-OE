@@ -63,6 +63,7 @@ body {
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    font-optical-sizing: auto; /* Inter opsz 축 활성 — 크기별 글자 형태 최적화 */
     transition: background-color 0.5s ease, color 0.5s ease;
 }
 
@@ -148,13 +149,18 @@ html:not(.js) #intro-overlay {
     color: var(--text);
     display: grid;
     place-items: center;
-    transition: border-color 0.3s ease, color 0.3s ease, background-color 0.5s ease;
+    transition: border-color 0.3s ease, color 0.3s ease, background-color 0.5s ease, transform 0.1s ease-out;
 }
 
 /* 포인트 컬러 사용처 #5: 토글 활성(호버) 상태 */
 #theme-toggle:hover {
     border-color: var(--accent);
     color: var(--accent);
+}
+
+/* 누르는 순간 즉각 반응 (release가 아니라 press에서) */
+#theme-toggle:active {
+    transform: scale(0.92);
 }
 
 #theme-toggle svg {
@@ -651,7 +657,10 @@ html.js .scroll-indicator {
 .modal {
     position: fixed;
     inset: 0;
-    background-color: var(--bg);
+    /* 반투명 머티리얼 — 리스트가 뒤로 물러난 깊이감, 이미지 감상엔 지장 없는 88% */
+    background-color: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(24px) saturate(120%);
+    -webkit-backdrop-filter: blur(24px) saturate(120%);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -714,6 +723,10 @@ html.js .scroll-indicator {
     background-color: var(--text-muted);
 }
 
+.indicator-dot:active {
+    transform: scale(0.8);
+}
+
 .indicator-dot.active {
     background-color: var(--text);
     transform: scale(1.3);
@@ -736,12 +749,16 @@ html.js .scroll-indicator {
     letter-spacing: 0.05em;
     cursor: pointer;
     z-index: 1001;
-    transition: border-color 0.3s ease, color 0.3s ease;
+    transition: border-color 0.3s ease, color 0.3s ease, transform 0.1s ease-out;
 }
 
 .close-modal:hover {
     border-color: var(--accent);
     color: var(--accent);
+}
+
+.close-modal:active {
+    transform: scale(0.96);
 }
 
 /* 이전/다음 화살표 */
@@ -756,12 +773,16 @@ html.js .scroll-indicator {
     font-weight: 300;
     z-index: 1002;
     padding: 1rem 2.5vw;
-    transition: color 0.3s ease;
+    transition: color 0.3s ease, transform 0.1s ease-out;
     display: none;
 }
 
 .modal-nav:hover {
     color: var(--text);
+}
+
+.modal-nav:active {
+    transform: translateY(-50%) scale(0.88);
 }
 
 .modal-nav.prev-arrow { left: 8px; }
@@ -862,6 +883,15 @@ html.js .scroll-indicator {
     .modal-nav {
         font-size: 1.3rem;
         padding: 1rem 3vw;
+    }
+}
+
+/* ---------- 접근성: 투명도 최소화 — 머티리얼을 불투명하게 ---------- */
+@media (prefers-reduced-transparency: reduce) {
+    .modal {
+        background-color: var(--bg);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
     }
 }
 

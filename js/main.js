@@ -303,10 +303,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const scrollToY = (y) => {
             snapping = true;
             if (lenis) {
+                // lock 없음 — 스냅 이동 중에도 휠/터치 입력이 즉시 가로챌 수 있게 (인터럽트 가능)
                 lenis.scrollTo(y, {
                     duration: SNAP.DURATION,
                     easing: (t) => 1 - Math.pow(1 - t, 3),
-                    lock: true,
                     onComplete: () => { snapping = false; },
                 });
                 // onComplete 미발화 대비 안전 해제
@@ -316,6 +316,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(() => { snapping = false; }, 700);
             }
         };
+
+        // 스냅 중 사용자 입력이 들어오면 스냅 상태 즉시 해제 —
+        // 입력이 끝나고 멈춘 지점에서 스냅 판정이 새로 이뤄짐
+        const cancelSnap = () => { snapping = false; };
+        window.addEventListener('wheel', cancelSnap, { passive: true });
+        window.addEventListener('touchstart', cancelSnap, { passive: true });
 
         const trySnap = () => {
             if (snapping) return;
@@ -368,7 +374,7 @@ document.addEventListener('DOMContentLoaded', () => {
         previewActive = true;
         if (cursorEl) cursorEl.classList.add('is-hidden');
         gsap.to(previewInner, { opacity: 1, scale: 1, duration: 0.3, ease: 'power3.out' });
-        gsap.fromTo(viewBtn, { scale: 0 }, { scale: 1, duration: 0.3, ease: 'back.out(1.7)' });
+        gsap.fromTo(viewBtn, { scale: 0 }, { scale: 1, duration: 0.3, ease: 'back.out(1.4)' });
     }
 
     function hidePreview() {
@@ -641,7 +647,7 @@ document.addEventListener('DOMContentLoaded', () => {
             preview.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
             previewActive = true;
             gsap.to(previewInner, { opacity: 1, scale: 1, duration: 0.3, ease: 'power3.out' });
-            gsap.fromTo(viewBtn, { scale: 0 }, { scale: 1, duration: 0.3, ease: 'back.out(1.7)' });
+            gsap.fromTo(viewBtn, { scale: 0 }, { scale: 1, duration: 0.3, ease: 'back.out(1.4)' });
         };
 
         document.querySelectorAll('.exhibition-list li a').forEach((link) => {
