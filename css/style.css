@@ -513,6 +513,11 @@ html.js .scroll-indicator {
     to   { transform: rotate(calc(var(--orbit-start, 0deg) + 360deg)); }
 }
 
+/* 다이어그램이 화면 밖일 때 궤도 공전 일시정지 (JS IntersectionObserver가 토글) */
+.philosophy-diagram.is-offscreen .orbit {
+    animation-play-state: paused;
+}
+
 /* ---------- 아이덴티티 스테이트먼트 (Exhibition Design ✕ Media Art) ---------- */
 .section-statement {
     margin-top: calc(var(--section-gap) * -0.35); /* 철학 섹션 쪽으로 약간 끌어올림 */

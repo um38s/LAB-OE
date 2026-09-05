@@ -34,14 +34,14 @@
     <link rel="stylesheet" crossorigin
         href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
 
-    <link rel="stylesheet" href="css/style.css?v=20260905c">
+    <link rel="stylesheet" href="css/style.css?v=20260905d">
 
-    <!-- GSAP + ScrollTrigger -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <!-- GSAP + ScrollTrigger (defer: HTML 파싱 비차단, 실행 순서는 문서 순서 보장) -->
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 
     <!-- Lenis smooth scroll -->
-    <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+    <script defer src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
 </head>
 
 <body>
@@ -243,12 +243,12 @@
         <button class="modal-nav prev-arrow" id="modal-prev" aria-label="Previous image">←</button>
         <button class="modal-nav next-arrow" id="modal-next" aria-label="Next image">→</button>
         <div class="modal-body-wrapper">
-            <img class="modal-content" id="modal-img" alt="">
+            <img class="modal-content" id="modal-img" alt="" decoding="async">
             <a id="modal-youtube" href="#" target="_blank" rel="noopener" class="modal-youtube-link">YouTube&nbsp;↗</a>
         </div>
     </div>
 
-    <script src="js/main.js?v=20260905b"></script>
+    <script defer src="js/main.js?v=20260905d"></script>
 </body>
 
 </html>

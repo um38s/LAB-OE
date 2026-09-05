@@ -195,12 +195,31 @@ document.addEventListener('DOMContentLoaded', () => {
             opacity: 1,
             duration: 0.6,
             onComplete() {
-                gsap.to('.scroll-indicator', {
+                indicatorTween = gsap.to('.scroll-indicator', {
                     y: 8, duration: 1.5, repeat: -1, yoyo: true, ease: 'sine.inOut',
                 });
             },
         }, 0.7);
         return tl;
+    }
+
+    // 화면 밖 요소의 무한 애니메이션 일시정지 (보이는 결과 동일, 유휴 비용 절약)
+    let indicatorTween = null;
+    if ('IntersectionObserver' in window) {
+        const indicator = document.querySelector('.scroll-indicator');
+        if (indicator) {
+            new IntersectionObserver((entries) => {
+                if (!indicatorTween) return;
+                if (entries[0].isIntersecting) indicatorTween.play();
+                else indicatorTween.pause();
+            }).observe(indicator);
+        }
+        const diagram = document.querySelector('.philosophy-diagram');
+        if (diagram) {
+            new IntersectionObserver((entries) => {
+                diagram.classList.toggle('is-offscreen', !entries[0].isIntersecting);
+            }).observe(diagram);
+        }
     }
 
     function showHeroInstant() {
