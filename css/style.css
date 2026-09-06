@@ -8,7 +8,7 @@
 :root {
     --bg:         #F5F4F0;
     --text:       #141414;
-    --text-muted: #787670;
+    --text-muted: #6F6D66; /* 4.7:1 — WCAG AA (기존 #787670은 4.1:1로 미달) */
     --line:       #D6D4CE;
     --accent:     #0026FF;
     --preview-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
@@ -71,6 +71,12 @@ body {
 ::selection {
     background-color: var(--accent);
     color: #ffffff;
+}
+
+/* 키보드 포커스 링 — 마우스 클릭에는 나타나지 않음 */
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
 }
 
 a {
@@ -585,8 +591,9 @@ html.js .scroll-indicator {
     transition: font-variation-settings 0.3s ease;
 }
 
-/* 호버/터치 근접 시 글자 웨이트 상승 */
-.exhibition-list li.is-hovered .details {
+/* 호버/터치 근접 시 글자 웨이트 상승 (키보드 포커스도 동일 반응) */
+.exhibition-list li.is-hovered .details,
+.exhibition-list li a:focus-visible .details {
     font-variation-settings: 'wght' 640;
 }
 
@@ -716,12 +723,32 @@ html.js .scroll-indicator {
 }
 
 .indicator-dot {
+    position: relative;
     width: 7px;
     height: 7px;
+    padding: 0;
+    border: none;
     border-radius: 50%;
     background-color: var(--line);
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+/* 7px 도트보다 넓은 실제 클릭/탭 영역 (시각 크기는 유지) */
+.indicator-dot::before {
+    content: '';
+    position: absolute;
+    inset: -5px;
+}
+
+@media (pointer: coarse) {
+    .modal-indicators {
+        gap: 1.5rem;
+    }
+
+    .indicator-dot::before {
+        inset: -11px;
+    }
 }
 
 .indicator-dot:hover {
@@ -746,6 +773,7 @@ html.js .scroll-indicator {
     align-items: center;
     gap: 0.25rem;
     padding: 8px 18px;
+    background: transparent;
     border: 1px solid var(--line);
     border-radius: 50px;
     color: var(--text);

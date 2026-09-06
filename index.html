@@ -6,6 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KIM YOUNG TAE | Media Artist</title>
 
+    <meta name="description" content="익숙함에 낯선 경험 — 전시디자이너·미디어아티스트 김영태(LAB OE)의 포트폴리오. 미디어아트 전시와 박물관 전시공간 디자인 작업을 소개합니다.">
+    <meta id="meta-theme-color" name="theme-color" content="#F5F4F0">
+    <link rel="icon" href="icon.png">
+
+    <!-- 링크 공유 미리보기 (Open Graph) -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="LAB OE — KIM YOUNG TAE">
+    <meta property="og:description" content="전시디자이너·미디어아티스트 김영태(LAB OE)의 포트폴리오">
+    <meta property="og:url" content="https://um38s.github.io/LAB-OE/">
+    <meta property="og:image" content="https://um38s.github.io/LAB-OE/img/thumbs/IMG_001.webp">
+    <meta name="twitter:card" content="summary_large_image">
+
     <script>
         /**
          * 테마 초기화: <head>에서 즉시 실행해 FOUC 방지.
@@ -21,6 +33,11 @@
             } else {
                 document.documentElement.setAttribute('data-theme', 'light');
             }
+            // 모바일 브라우저 상단 UI 색을 현재 테마 배경에 맞춤
+            const meta = document.getElementById('meta-theme-color');
+            if (meta && document.documentElement.getAttribute('data-theme') === 'dark') {
+                meta.setAttribute('content', '#141414');
+            }
         })();
     </script>
 
@@ -34,7 +51,7 @@
     <link rel="stylesheet" crossorigin
         href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
 
-    <link rel="stylesheet" href="css/style.css?v=20260905d">
+    <link rel="stylesheet" href="css/style.css?v=20260906a">
 
     <!-- GSAP + ScrollTrigger (defer: HTML 파싱 비차단, 실행 순서는 문서 순서 보장) -->
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
@@ -121,25 +138,25 @@
             <section class="about">
                 <h2 class="section-title">MEDIA ART EXHIBITIONS</h2>
                 <ul class="exhibition-list">
-                    <li><a href="#" data-img="img/26_s_01.png,img/26_s_02.png,img/26_s_03.png,img/26_s_04.png"><span class="year">2026</span><span class="details">‘2026 수원 국가유산 야행’ 화홍문 미디어아트 전시<br>수원, 한국</span><img src="img/thumbs/26_s_01.webp" alt="Exhibition Image" class="hover-img" loading="lazy"></a></li>
-                    <li><a href="#" data-img="img/2026/001.png,img/2026/002.png,img/2026/003.png" data-youtube="https://www.youtube.com/watch?v=doqYTsF8UA4"><span class="year">2026</span><span class="details">‘2026 해치마당 미디어월 봄 전시’ 전문작가 기획전 전시<br>서울, 한국</span><img src="img/thumbs/2026/001.webp" alt="Exhibition Image" class="hover-img" loading="lazy"></a></li>
-                    <li><a href="#" data-img="img/IMG_001.png" data-youtube="https://youtu.be/IWG60YMttEs"><span class="year">2025</span><span class="details">‘2025 서울라이트 광화문’ 세종 파빌리온 초청작가 및 전시<br>서울, 한국</span><img src="img/thumbs/IMG_001.webp" alt="Exhibition Image" class="hover-img" loading="lazy"></a></li>
-                    <li><a href="#" data-img="img/m2_001.png"><span class="year">2025</span><span class="details">‘2025 수원화성 미디어아트’ 전시 참여작가 및 전시<br>수원, 한국</span><img src="img/thumbs/m2_001.webp" alt="Exhibition Image" class="hover-img" loading="lazy"></a></li>
-                    <li><a href="#" data-img="img/m3_002.png" data-youtube="https://youtu.be/-45vd8GlQbo"><span class="year">2025</span><span class="details">VIDO SUMMER : 장면의 잔상들 전시<br>서울, 한국</span><img src="img/thumbs/m3_002.webp" alt="Exhibition Image" class="hover-img" loading="lazy"></a></li>
-                    <li><a href="#" data-img="img/m4_001.png" data-youtube="https://www.youtube.com/watch?v=3V4NV4mrNOo"><span class="year">2025</span><span class="details">‘2025 아뜰리에 광화 봄’ 전시 참여작가 및 전시<br>서울, 한국</span><img src="img/thumbs/m4_001.webp" alt="Exhibition Image" class="hover-img" loading="lazy"></a></li>
-                    <li><a href="#" data-img="img/m5_001.png"><span class="year">2025</span><span class="details">‘2025 화성행궁 야간개장 &lt;달빛화담, 花谈&gt;’, 미디어아트 전시<br>수원, 한국</span><img src="img/thumbs/m5_001.webp" alt="Exhibition Image" class="hover-img" loading="lazy"></a></li>
-                    <li><a href="#" data-img="img/m6_001.png" data-youtube="https://youtu.be/niTaHsrvXlQ"><span class="year">2024</span><span class="details">‘2024 국가유산 미디어아트 수원화성’ 참여작가 및 전시<br>수원, 한국</span><img src="img/thumbs/m6_001.webp" alt="Exhibition Image" class="hover-img" loading="lazy"></a></li>
-                    <li><a href="#" data-img="img/m7_001.png,img/m8_001.png,img/m9_001.png" data-youtube="https://youtu.be/57afv7eFpKw"><span class="year">2024</span><span class="details">강원랜드 미디어 월/스크린 제작 참여작가 및 전시<br>정선군, 한국</span><img src="img/thumbs/m7_001.webp" alt="Exhibition Image" class="hover-img" loading="lazy"></a></li>
+                    <li><a href="#" data-img="img/26_s_01.png,img/26_s_02.png,img/26_s_03.png,img/26_s_04.png"><span class="year">2026</span><span class="details">‘2026 수원 국가유산 야행’ 화홍문 미디어아트 전시<br>수원, 한국</span><img src="img/thumbs/26_s_01.webp" alt="" class="hover-img" loading="lazy"></a></li>
+                    <li><a href="#" data-img="img/2026/001.png,img/2026/002.png,img/2026/003.png" data-youtube="https://www.youtube.com/watch?v=doqYTsF8UA4"><span class="year">2026</span><span class="details">‘2026 해치마당 미디어월 봄 전시’ 전문작가 기획전 전시<br>서울, 한국</span><img src="img/thumbs/2026/001.webp" alt="" class="hover-img" loading="lazy"></a></li>
+                    <li><a href="#" data-img="img/IMG_001.png" data-youtube="https://youtu.be/IWG60YMttEs"><span class="year">2025</span><span class="details">‘2025 서울라이트 광화문’ 세종 파빌리온 초청작가 및 전시<br>서울, 한국</span><img src="img/thumbs/IMG_001.webp" alt="" class="hover-img" loading="lazy"></a></li>
+                    <li><a href="#" data-img="img/m2_001.png"><span class="year">2025</span><span class="details">‘2025 수원화성 미디어아트’ 전시 참여작가 및 전시<br>수원, 한국</span><img src="img/thumbs/m2_001.webp" alt="" class="hover-img" loading="lazy"></a></li>
+                    <li><a href="#" data-img="img/m3_002.png" data-youtube="https://youtu.be/-45vd8GlQbo"><span class="year">2025</span><span class="details">VIDO SUMMER : 장면의 잔상들 전시<br>서울, 한국</span><img src="img/thumbs/m3_002.webp" alt="" class="hover-img" loading="lazy"></a></li>
+                    <li><a href="#" data-img="img/m4_001.png" data-youtube="https://www.youtube.com/watch?v=3V4NV4mrNOo"><span class="year">2025</span><span class="details">‘2025 아뜰리에 광화 봄’ 전시 참여작가 및 전시<br>서울, 한국</span><img src="img/thumbs/m4_001.webp" alt="" class="hover-img" loading="lazy"></a></li>
+                    <li><a href="#" data-img="img/m5_001.png"><span class="year">2025</span><span class="details">‘2025 화성행궁 야간개장 &lt;달빛화담, 花谈&gt;’, 미디어아트 전시<br>수원, 한국</span><img src="img/thumbs/m5_001.webp" alt="" class="hover-img" loading="lazy"></a></li>
+                    <li><a href="#" data-img="img/m6_001.png" data-youtube="https://youtu.be/niTaHsrvXlQ"><span class="year">2024</span><span class="details">‘2024 국가유산 미디어아트 수원화성’ 참여작가 및 전시<br>수원, 한국</span><img src="img/thumbs/m6_001.webp" alt="" class="hover-img" loading="lazy"></a></li>
+                    <li><a href="#" data-img="img/m7_001.png,img/m8_001.png,img/m9_001.png" data-youtube="https://youtu.be/57afv7eFpKw"><span class="year">2024</span><span class="details">강원랜드 미디어 월/스크린 제작 참여작가 및 전시<br>정선군, 한국</span><img src="img/thumbs/m7_001.webp" alt="" class="hover-img" loading="lazy"></a></li>
                     <li><div class="item-content"><span class="year">2023</span><span class="details">전북아트플랫폼 &lt;낙서창고 井&gt; 미디어아트 선정 및 전시<br>정읍, 한국</span></div></li>
-                    <li><a href="#" data-img="img/m11_01.png"><span class="year">2023</span><span class="details">수원화성 미디어아트전 참여작가 및 전시<br>수원, 한국</span><img src="img/thumbs/m11_01.webp" alt="Exhibition Image" class="hover-img" loading="lazy"></a></li>
-                    <li><a href="#" data-img="img/m10_001.png"><span class="year">2023</span><span class="details">강릉대도호부관아 문화유산 미디어아트 참여작가 및 전시<br>강릉, 한국</span><img src="img/thumbs/m10_001.webp" alt="Exhibition Image" class="hover-img" loading="lazy"></a></li>
-                    <li><a href="#" data-img="img/m12_002.png" data-youtube="https://www.youtube.com/watch?v=jKYZwj4TEMg"><span class="year">2022</span><span class="details">부산 유라시아플랫폼 미디어아트 공모 선정 및 전시<br>부산, 한국</span><img src="img/thumbs/m12_002.webp" alt="Exhibition Image" class="hover-img" loading="lazy"></a></li>
-                    <li><a href="#" data-img="img/m13_001.png" data-youtube="https://youtu.be/4kdmkzwMT5Q"><span class="year">2022</span><span class="details">서울시-KT 광화문광장 미디어아트 공모 선정 및 전시<br>서울, 한국</span><img src="img/thumbs/m13_001.webp" alt="Exhibition Image" class="hover-img" loading="lazy"></a></li>
+                    <li><a href="#" data-img="img/m11_01.png"><span class="year">2023</span><span class="details">수원화성 미디어아트전 참여작가 및 전시<br>수원, 한국</span><img src="img/thumbs/m11_01.webp" alt="" class="hover-img" loading="lazy"></a></li>
+                    <li><a href="#" data-img="img/m10_001.png"><span class="year">2023</span><span class="details">강릉대도호부관아 문화유산 미디어아트 참여작가 및 전시<br>강릉, 한국</span><img src="img/thumbs/m10_001.webp" alt="" class="hover-img" loading="lazy"></a></li>
+                    <li><a href="#" data-img="img/m12_002.png" data-youtube="https://www.youtube.com/watch?v=jKYZwj4TEMg"><span class="year">2022</span><span class="details">부산 유라시아플랫폼 미디어아트 공모 선정 및 전시<br>부산, 한국</span><img src="img/thumbs/m12_002.webp" alt="" class="hover-img" loading="lazy"></a></li>
+                    <li><a href="#" data-img="img/m13_001.png" data-youtube="https://youtu.be/4kdmkzwMT5Q"><span class="year">2022</span><span class="details">서울시-KT 광화문광장 미디어아트 공모 선정 및 전시<br>서울, 한국</span><img src="img/thumbs/m13_001.webp" alt="" class="hover-img" loading="lazy"></a></li>
                     <li><div class="item-content"><span class="year">2021</span><span class="details">‘서울로 미디어 캔버스 네이쳐 프로젝트’ 선정 및 전시<br>서울, 한국</span></div></li>
                     <li><div class="item-content"><span class="year">2020</span><span class="details">화려한 빛으로의 초대전 참여 작가<br>대구, 한국</span></div></li>
                     <li><div class="item-content"><span class="year">2019</span><span class="details">'남원 사운드 페스티벌 2019' 전시<br>남원, 한국</span></div></li>
-                    <li><a href="#" data-img="img/m17_001.png,img/m17_002.png"><span class="year">2018</span><span class="details">‘수원야행’ 미디어파사드 전시<br>수원, 한국</span><img src="img/thumbs/m17_001.webp" alt="Exhibition Image" class="hover-img" loading="lazy"></a></li>
-                    <li><a href="#" data-img="img/m16_001.png"><span class="year">2017</span><span class="details">제10회 청주공예비엔날레 기획전 전시<br>청주, 한국</span><img src="img/thumbs/m16_001.webp" alt="Exhibition Image" class="hover-img" loading="lazy"></a></li>
+                    <li><a href="#" data-img="img/m17_001.png,img/m17_002.png"><span class="year">2018</span><span class="details">‘수원야행’ 미디어파사드 전시<br>수원, 한국</span><img src="img/thumbs/m17_001.webp" alt="" class="hover-img" loading="lazy"></a></li>
+                    <li><a href="#" data-img="img/m16_001.png"><span class="year">2017</span><span class="details">제10회 청주공예비엔날레 기획전 전시<br>청주, 한국</span><img src="img/thumbs/m16_001.webp" alt="" class="hover-img" loading="lazy"></a></li>
                 </ul>
             </section>
 
@@ -150,43 +167,43 @@
                     <li>
                         <a href="#" data-img="img/s1_01.png,img/s1_02.png,img/s1_03.png,img/s1_04.png">
                             <span class="year">2025</span><span class="details">국립광주박물관 도자문화관 상설전시실 전시디자인</span>
-                            <img src="img/thumbs/s1_01.webp" alt="2025 Exhibition" class="hover-img" loading="lazy">
+                            <img src="img/thumbs/s1_01.webp" alt="" class="hover-img" loading="lazy">
                         </a>
                     </li>
                     <li>
                         <a href="#" data-img="img/s3_01.png">
                             <span class="year">2024</span><span class="details">국립중앙박물관 국보순회전 (전시 디자인)</span>
-                            <img src="img/thumbs/s3_01.webp" alt="2024 Exhibition" class="hover-img" loading="lazy">
+                            <img src="img/thumbs/s3_01.webp" alt="" class="hover-img" loading="lazy">
                         </a>
                     </li>
                     <li>
                         <a href="#" data-img="img/s2_01.png,img/s2_02.png,img/s2_03.png">
                             <span class="year">2024</span><span class="details">국립고궁박물관 (2층 상설전시실 재개관 전시환경 디자인)</span>
-                            <img src="img/thumbs/s2_01.webp" alt="2024 Exhibition" class="hover-img" loading="lazy">
+                            <img src="img/thumbs/s2_01.webp" alt="" class="hover-img" loading="lazy">
                         </a>
                     </li>
                     <li>
                         <a href="#" data-img="img/s4_01.png,img/s4_02.png,img/s4_03.png">
                             <span class="year">2023</span><span class="details">국립나주박물관 (상설전시실 재개관 전시환경 디자인)</span>
-                            <img src="img/thumbs/s4_01.webp" alt="2023 Exhibition" class="hover-img" loading="lazy">
+                            <img src="img/thumbs/s4_01.webp" alt="" class="hover-img" loading="lazy">
                         </a>
                     </li>
                     <li>
                         <a href="#" data-img="img/s5_01.png,img/s5_02.png">
                             <span class="year">2022</span><span class="details">국립경주박물관 불교조각실 전시디자인</span>
-                            <img src="img/thumbs/s5_01.webp" alt="2022 Exhibition" class="hover-img" loading="lazy">
+                            <img src="img/thumbs/s5_01.webp" alt="" class="hover-img" loading="lazy">
                         </a>
                     </li>
                     <li>
                         <a href="#" data-img="img/s6_01.png,img/s6_02.png">
                             <span class="year">2021</span><span class="details">국립경주박물관 불교사원실 전시디자인</span>
-                            <img src="img/thumbs/s6_01.webp" alt="2021 Exhibition" class="hover-img" loading="lazy">
+                            <img src="img/thumbs/s6_01.webp" alt="" class="hover-img" loading="lazy">
                         </a>
                     </li>
                     <li>
                         <a href="#" data-img="img/s7_01.png,img/s8_01.jpg,img/s7_002.jpg,img/s7_03.png">
                             <span class="year">2020</span><span class="details">국립경주박물관 상설전시실 (3, 4전시실 개편) 전시디자인</span>
-                            <img src="img/thumbs/s7_01.webp" alt="2020 Exhibition" class="hover-img" loading="lazy">
+                            <img src="img/thumbs/s7_01.webp" alt="" class="hover-img" loading="lazy">
                         </a>
                     </li>
                     <li>
@@ -233,12 +250,12 @@
     </main>
 
     <!-- Image Modal -->
-    <div id="image-modal" class="modal">
-        <div class="close-modal">
+    <div id="image-modal" class="modal" role="dialog" aria-modal="true" aria-label="전시 이미지 보기">
+        <button class="close-modal" type="button">
             <span class="icon-bracket">(</span>
             <span>Back</span>
             <span class="icon-bracket">)</span>
-        </div>
+        </button>
         <div class="modal-indicators" id="modal-indicators"></div>
         <button class="modal-nav prev-arrow" id="modal-prev" aria-label="Previous image">←</button>
         <button class="modal-nav next-arrow" id="modal-next" aria-label="Next image">→</button>
@@ -248,7 +265,7 @@
         </div>
     </div>
 
-    <script defer src="js/main.js?v=20260905e"></script>
+    <script defer src="js/main.js?v=20260906a"></script>
 </body>
 
 </html>

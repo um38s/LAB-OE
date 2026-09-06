@@ -42,6 +42,9 @@ if (themeToggle) {
         const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
         document.documentElement.setAttribute('data-theme', next);
         localStorage.setItem('theme', next);
+        // 모바일 브라우저 상단 UI 색 동기화 (초기값은 head 인라인 스크립트가 설정)
+        const meta = document.getElementById('meta-theme-color');
+        if (meta) meta.setAttribute('content', next === 'dark' ? '#141414' : '#F5F4F0');
     });
 }
 
@@ -55,7 +58,17 @@ if (typeof Lenis !== 'undefined' && !reducedMotion) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    if (typeof gsap === 'undefined') return;
+    // CDN 로드 실패 시에도 콘텐츠는 보여야 함 — 오버레이 제거 + 히어로 즉시 표시 후 종료
+    if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
+        const ov = document.getElementById('intro-overlay');
+        if (ov) ov.remove();
+        const title = document.querySelector('.hero-title');
+        if (title) title.classList.add('is-split', 'is-revealed');
+        document.querySelectorAll('.hero-subtitle, .scroll-indicator').forEach((el) => {
+            el.style.opacity = 1;
+        });
+        return;
+    }
     gsap.registerPlugin(ScrollTrigger);
 
     // Lenis ↔ GSAP 연동
@@ -564,6 +577,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentImageArray = [];
     let currentImageIndex = 0;
+    let lastFocusedEl = null; // 모달 닫을 때 포커스 복귀 지점
 
     const updateModalImage = (index) => {
         if (modalImg && currentImageArray[index]) {
@@ -607,8 +621,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 indicatorsContainer.innerHTML = '';
                 if (currentImageArray.length > 1) {
                     currentImageArray.forEach((_, i) => {
-                        const dot = document.createElement('div');
+                        const dot = document.createElement('button');
+                        dot.type = 'button';
                         dot.className = 'indicator-dot';
+                        dot.setAttribute('aria-label', `${i + 1}번째 이미지`);
                         if (i === 0) dot.classList.add('active');
                         dot.addEventListener('click', (evt) => {
                             evt.stopPropagation();
@@ -639,7 +655,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // 프리뷰/행 상태 정리 후 모달 오픈
             hidePreview();
             clearRowStates();
+            lastFocusedEl = document.activeElement;
             modal.classList.add('show');
+            closeBtn.focus();
             if (lenis) lenis.stop();
         };
 
@@ -732,6 +750,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentImageIndex = 0;
             }, 350);
             if (lenis) lenis.start();
+            // 모달을 연 리스트 행으로 포커스 복귀
+            if (lastFocusedEl && typeof lastFocusedEl.focus === 'function') lastFocusedEl.focus();
+            lastFocusedEl = null;
         };
 
         closeBtn.addEventListener('click', closeModal);
@@ -752,6 +773,21 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.key === 'Escape') closeModal();
             if (e.key === 'ArrowLeft' && modalPrev) modalPrev.click();
             if (e.key === 'ArrowRight' && modalNext) modalNext.click();
+            // 포커스가 모달 밖으로 새지 않게 순환 (간단 포커스 트랩)
+            if (e.key === 'Tab') {
+                const focusables = Array.from(modal.querySelectorAll('button, a'))
+                    .filter((el) => el.offsetParent !== null);
+                if (!focusables.length) return;
+                const first = focusables[0];
+                const last = focusables[focusables.length - 1];
+                if (e.shiftKey && document.activeElement === first) {
+                    e.preventDefault();
+                    last.focus();
+                } else if (!e.shiftKey && document.activeElement === last) {
+                    e.preventDefault();
+                    first.focus();
+                }
+            }
         });
 
         const wrapper = document.querySelector('.modal-body-wrapper');
