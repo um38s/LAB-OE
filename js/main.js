@@ -313,31 +313,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // =====================================================
-    // 대표작: 리스트 폭 → 화면 가득 열림(스크롤 연동) + 보일 때만 영상 재생
+    // 대표작: 살짝 작은 틀 → 리스트 폭으로 열림(스크롤 연동) + 보일 때만 영상 재생
     // =====================================================
     const works = gsap.utils.toArray('.work');
     if (works.length) {
-        // 처음 잘림 좌우 = 리스트 칼럼 가장자리 (컨테이너 바깥 여백 + 거터)
-        const sideInset = () => {
-            const gutter = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--gutter')) || 24;
-            return Math.max(gutter, (document.documentElement.clientWidth - 1400) / 2 + gutter);
-        };
-
         if (!reducedMotion) {
             works.forEach((work) => {
                 const media = work.querySelector('.work-media');
                 const video = work.querySelector('.work-video');
                 const caption = work.querySelector('.work-caption');
                 gsap.fromTo(media,
-                    { clipPath: () => `inset(7% ${sideInset()}px 7% ${sideInset()}px round 6px)` },
+                    { clipPath: 'inset(6% 6% 6% 6% round 6px)' },
                     {
-                        clipPath: 'inset(0% 0px 0% 0px round 0px)',
+                        clipPath: 'inset(0% 0% 0% 0% round 0px)',
                         ease: 'none',
-                        scrollTrigger: { trigger: media, start: 'top 90%', end: 'center 60%', scrub: 0.6, invalidateOnRefresh: true },
+                        scrollTrigger: { trigger: media, start: 'top 90%', end: 'center 60%', scrub: 0.6 },
                     });
                 // 열리는 동안 영상은 살짝 줌아웃 — 틀과 내용이 다른 속도로 움직이는 깊이감
+                // (확대는 8%까지만: 1080p 원본이 흐려지지 않게)
                 if (video) {
-                    gsap.fromTo(video, { scale: 1.18 }, {
+                    gsap.fromTo(video, { scale: 1.08 }, {
                         scale: 1,
                         ease: 'none',
                         scrollTrigger: { trigger: media, start: 'top bottom', end: 'bottom top', scrub: 0.6 },
@@ -358,10 +353,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // 모션 최소화 설정이면 자동 재생 없이 포스터만 (영상 파일도 받지 않음)
         const videos = works.map((w) => w.querySelector('.work-video')).filter(Boolean);
         if (!reducedMotion && 'IntersectionObserver' in window) {
+            // 폰(정사각 틀)은 가운데 정사각만 담은 900px 경량본
+            const useMobileSrc = window.matchMedia('(max-width: 768px)').matches;
             const loadVideo = (v) => {
-                if (!v.getAttribute('src') && v.dataset.src) {
+                const src = (useMobileSrc && v.dataset.srcM) || v.dataset.src;
+                if (!v.getAttribute('src') && src) {
                     v.preload = 'auto';
-                    v.src = v.dataset.src;
+                    v.src = src;
                 }
             };
             // 화면 600px 앞에서 미리 받기 — 멀리 있는 영상은 받지 않음
