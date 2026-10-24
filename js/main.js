@@ -109,6 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
             el.style.opacity = 1;
         });
         drawAllTitles();
+        document.querySelectorAll('.work-video[data-poster]').forEach((v) => v.setAttribute('poster', v.dataset.poster));
         return;
     }
     gsap.registerPlugin(ScrollTrigger);
@@ -354,12 +355,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const outro = { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 0.5 };
             // SCROLL 안내는 스크롤을 시작하자마자 사라짐 (요소 자체는 로드 리빌·위아래 흔들림이 쓰므로 자식에 적용)
             const indicatorKids = gsap.utils.toArray('.scroll-indicator > *');
+            let lastIndicatorOpacity = '1';
             ScrollTrigger.create({
                 ...outro,
                 onUpdate: (self) => {
                     heroOut = self.progress;
                     const o = String(Math.max(0, 1 - self.progress * 5));
-                    indicatorKids.forEach((el) => { el.style.opacity = o; });
+                    if (o !== lastIndicatorOpacity) { // 이미 0이면(대부분의 스크롤) 다시 쓰지 않음
+                        lastIndicatorOpacity = o;
+                        indicatorKids.forEach((el) => { el.style.opacity = o; });
+                    }
                 },
             });
             // 제목은 스크롤의 절반 속도로만 올라가 화면에 머무는 동안 물러나고(깊이감), 다음 장면이 그 위로 올라옴.
@@ -428,6 +433,28 @@ document.addEventListener('DOMContentLoaded', () => {
     let pauseWorkVideos = () => {};
     let resumeWorkVideos = () => {};
     if (works.length) {
+        // 폰(정사각 틀)은 가운데 정사각만 담은 경량 포스터·영상
+        const useMobileMedia = window.matchMedia('(max-width: 768px)').matches;
+
+        // 포스터도 가까워졌을 때 받음 — 첫 화면 무게에서 빠짐(데스크톱 523KB). 영상(600px 앞)보다 먼저 받도록 1500px 앞
+        const posterVideos = works.map((w) => w.querySelector('.work-video')).filter(Boolean);
+        const setPoster = (v) => {
+            const p = (useMobileMedia && v.dataset.posterM) || v.dataset.poster;
+            if (p && !v.getAttribute('poster')) v.setAttribute('poster', p);
+        };
+        if ('IntersectionObserver' in window) {
+            const posterIO = new IntersectionObserver((entries) => {
+                entries.forEach((e) => {
+                    if (!e.isIntersecting) return;
+                    setPoster(e.target);
+                    posterIO.unobserve(e.target);
+                });
+            }, { rootMargin: '1500px 0px' });
+            posterVideos.forEach((v) => posterIO.observe(v));
+        } else {
+            posterVideos.forEach(setPoster);
+        }
+
         if (!reducedMotion) {
             works.forEach((work) => {
                 const media = work.querySelector('.work-media');
@@ -464,10 +491,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // 모션 최소화 설정이면 자동 재생 없이 포스터만 (영상 파일도 받지 않음)
         const videos = works.map((w) => w.querySelector('.work-video')).filter(Boolean);
         if (!reducedMotion && 'IntersectionObserver' in window) {
-            // 폰(정사각 틀)은 가운데 정사각만 담은 900px 경량본
-            const useMobileSrc = window.matchMedia('(max-width: 768px)').matches;
             const loadVideo = (v) => {
-                const src = (useMobileSrc && v.dataset.srcM) || v.dataset.src;
+                const src = (useMobileMedia && v.dataset.srcM) || v.dataset.src;
                 if (!v.getAttribute('src') && src) {
                     v.preload = 'auto';
                     v.src = src;
