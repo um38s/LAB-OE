@@ -663,8 +663,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         previewActive = true;
         if (cursorEl) cursorEl.classList.add('is-hidden');
-        gsap.to(previewInner, { opacity: 1, scale: 1, duration: 0.3, ease: 'power3.out' });
-        gsap.fromTo(viewBtn, { scale: 0 }, { scale: 1, duration: 0.3, ease: 'back.out(1.4)' });
+        gsap.to(previewInner, { opacity: 1, scale: 1, duration: 0.3, ease: 'power3.out', overwrite: true });
+        gsap.fromTo(viewBtn, { scale: 0 }, { scale: 1, duration: 0.3, ease: 'back.out(1.4)', overwrite: true });
     }
 
     function hidePreview() {
@@ -672,8 +672,9 @@ document.addEventListener('DOMContentLoaded', () => {
         previewActive = false;
         // 모바일에서는 터치 중일 때만 포인터 복귀 (터치가 끝났으면 숨김 유지)
         if (cursorEl && (isDesktop || touchActive)) cursorEl.classList.remove('is-hidden');
-        gsap.to(previewInner, { opacity: 0, scale: 0.9, duration: 0.25, ease: 'power2.out' });
-        gsap.to(viewBtn, { scale: 0, duration: 0.2, ease: 'power2.in' });
+        // overwrite: 빠르게 들어왔다 나가면 먼저 시작한 '나타나기'가 나중에 끝나 프리뷰가 남던 문제 방지
+        gsap.to(previewInner, { opacity: 0, scale: 0.9, duration: 0.25, ease: 'power2.out', overwrite: true });
+        gsap.to(viewBtn, { scale: 0, duration: 0.2, ease: 'power2.in', overwrite: true });
     }
 
     function clearRowStates() {
@@ -702,6 +703,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (firstImg) hidePreview();
             });
         });
+
+        // 커서는 가만히 있고 화면만 스크롤되면 mouseleave가 늦거나 안 옴 →
+        // 스크롤할 때 커서 아래가 여전히 그 행인지 확인해, 벗어났으면 프리뷰·행 강조를 정리
+        let scrollCheckQueued = false;
+        const checkRowUnderCursor = () => {
+            scrollCheckQueued = false;
+            const hovered = document.querySelector('.exhibition-list li.is-hovered');
+            if (!hovered && !previewActive) return;
+            const el = document.elementFromPoint(mouse.x, mouse.y);
+            const li = el ? el.closest('.exhibition-list li') : null;
+            if (!li || li !== hovered) {
+                hidePreview();
+                clearRowStates();
+            }
+        };
+        const onScrollCheck = () => {
+            if (scrollCheckQueued) return;
+            scrollCheckQueued = true;
+            requestAnimationFrame(checkRowUnderCursor);
+        };
+        if (lenis) lenis.on('scroll', onScrollCheck);
+        else window.addEventListener('scroll', onScrollCheck, { passive: true });
     }
 
     // =====================================================
@@ -1040,8 +1063,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (y + ph > window.innerHeight - 12) y = Math.max(12, rect.top - ph - 12);
             preview.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
             previewActive = true;
-            gsap.to(previewInner, { opacity: 1, scale: 1, duration: 0.3, ease: 'power3.out' });
-            gsap.fromTo(viewBtn, { scale: 0 }, { scale: 1, duration: 0.3, ease: 'back.out(1.4)' });
+            gsap.to(previewInner, { opacity: 1, scale: 1, duration: 0.3, ease: 'power3.out', overwrite: true });
+            gsap.fromTo(viewBtn, { scale: 0 }, { scale: 1, duration: 0.3, ease: 'back.out(1.4)', overwrite: true });
         };
 
         document.querySelectorAll('.exhibition-list li a').forEach((link) => {
