@@ -20,6 +20,8 @@ const PARAMS = {
     SCROLL_LERP: 0.1,     // Lenis 스크롤 감쇠
     CURSOR_LERP: 0.15,    // 커스텀 커서 추적 지연
     INTRO_DURATION: 0.8,  // 인트로 오버레이 걷힘 시간(s)
+    HERO_PULL: 0.04,      // 히어로 글자가 커서 쪽으로 끌리는 최대 거리 = 글자 높이 × 이 값
+    OUT_WEIGHT: 200,      // 히어로를 스크롤로 벗어날 때 글자가 가늘어지는 끝 웨이트
     PREVIEW_TILT: 0.05,   // 호버 프리뷰 기울기: 추적 지연 거리(px) × 이 값 = 각도(°)
     PREVIEW_TILT_MAX: 7,  // 호버 프리뷰 최대 기울기(°)
     MAGNET: 0.3,          // 푸터 이메일 버튼이 커서 쪽으로 끌려가는 비율
@@ -166,9 +168,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // =====================================================
     // 히어로 — 키네틱 웨이트 루프 (커서 근접 + idle 웨이브)
     // =====================================================
-    const charState = heroChars.map(() => ({ w: PARAMS.HOVER_WEIGHT_MIN + 30, applied: PARAMS.HOVER_WEIGHT_MIN + 30 }));
+    const charState = heroChars.map(() => ({
+        w: PARAMS.HOVER_WEIGHT_MIN + 30, applied: PARAMS.HOVER_WEIGHT_MIN + 30,
+        x: 0, y: 0, ax: 0, ay: 0, // 커서 쪽으로 끌리는 이동량(px)과 마지막으로 쓴 값
+    }));
     let kineticOn = false;
     let heroVisible = true;
+    let heroOut = 0; // 히어로를 스크롤로 벗어난 정도 0~1 (가늘어지며 사라짐)
 
     if (heroTitle && 'IntersectionObserver' in window) {
         new IntersectionObserver((entries) => {
@@ -177,7 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function startKinetic() {
-        // 리빌 완료 후 마스크 클리핑 해제 (웨이트 변화로 글자가 잘리지 않게)
+        // 리빌 완료 표시 후 키네틱 웨이트 시작
         if (heroTitle) heroTitle.classList.add('is-revealed');
         if (reducedMotion || heroChars.length === 0) return;
         kineticOn = true;
@@ -190,32 +196,50 @@ document.addEventListener('DOMContentLoaded', () => {
         const t = now / 1000;
         const range = PARAMS.IDLE_WEIGHT_MAX - PARAMS.IDLE_WEIGHT_MIN;
 
-        // 읽기 페이즈: 레이아웃 읽기를 먼저 몰아서 강제 리플로우를 프레임당 1회로 제한
-        const rects = idle ? null : heroChars.map((c) => c.getBoundingClientRect());
+        // 읽기 페이즈: 레이아웃 읽기를 먼저 몰아서 강제 리플로우를 프레임당 1회로 제한.
+        // 글자 자체는 끌림으로 움직이므로 위치는 움직이지 않는 바깥 마스크에서 잼
+        const rects = idle ? null : heroChars.map((c) => c.parentElement.getBoundingClientRect());
 
         // 쓰기 페이즈
         heroChars.forEach((c, i) => {
             let target;
+            let tx = 0;
+            let ty = 0;
             if (idle) {
                 // 좌→우로 흐르는 사인 웨이브 (절제된 400~650)
                 const phase = (t / PARAMS.IDLE_PERIOD) * Math.PI * 2 - i * 0.55;
                 target = PARAMS.IDLE_WEIGHT_MIN + ((Math.sin(phase) + 1) / 2) * range;
             } else {
-                // 커서 근접 보간: 400 → 800
+                // 커서 근접 보간: 400 → 800, 가까울수록 글자가 커서 쪽으로 살짝 기움(자석)
                 const r = rects[i];
                 const dx = mouse.x - (r.left + r.width / 2);
                 const dy = mouse.y - (r.top + r.height / 2);
                 const d = Math.hypot(dx, dy);
-                target = d < PARAMS.HERO_RADIUS
-                    ? PARAMS.HOVER_WEIGHT_MIN + (1 - d / PARAMS.HERO_RADIUS) * (PARAMS.HOVER_WEIGHT_MAX - PARAMS.HOVER_WEIGHT_MIN)
-                    : PARAMS.HOVER_WEIGHT_MIN;
+                if (d < PARAMS.HERO_RADIUS) {
+                    const k = 1 - d / PARAMS.HERO_RADIUS;
+                    target = PARAMS.HOVER_WEIGHT_MIN + k * (PARAMS.HOVER_WEIGHT_MAX - PARAMS.HOVER_WEIGHT_MIN);
+                    const pull = k * k * r.height * PARAMS.HERO_PULL;
+                    tx = (dx / (d || 1)) * pull;
+                    ty = (dy / (d || 1)) * pull;
+                } else {
+                    target = PARAMS.HOVER_WEIGHT_MIN;
+                }
             }
             const s = charState[i];
             s.w += (target - s.w) * PARAMS.HERO_LERP;
+            s.x += (tx - s.x) * PARAMS.HERO_LERP;
+            s.y += (ty - s.y) * PARAMS.HERO_LERP;
+            // 스크롤로 벗어날수록 가늘게 (변수 폰트 웨이트로 '증발'하듯)
+            const w = s.w + (PARAMS.OUT_WEIGHT - s.w) * heroOut;
             // 변화가 미미하면 쓰기 생략 — 수렴 상태에서 스타일 무효화 방지
-            if (Math.abs(s.w - s.applied) > 0.5) {
-                s.applied = s.w;
-                c.style.fontVariationSettings = `'wght' ${s.w.toFixed(1)}`;
+            if (Math.abs(w - s.applied) > 0.5) {
+                s.applied = w;
+                c.style.fontVariationSettings = `'wght' ${w.toFixed(1)}`;
+            }
+            if (Math.abs(s.x - s.ax) > 0.05 || Math.abs(s.y - s.ay) > 0.05) {
+                s.ax = s.x;
+                s.ay = s.y;
+                c.style.transform = `translate3d(${s.x.toFixed(2)}px, ${s.y.toFixed(2)}px, 0)`;
             }
         });
     }
@@ -224,26 +248,35 @@ document.addEventListener('DOMContentLoaded', () => {
     // 히어로 — 로드 리빌 시퀀스
     // =====================================================
     function buildHeroReveal() {
+        // 키노트식 소프트 블러 인: 글자마다 흐릿하게 아래에서 떠올라 초점이 맞음 (순서대로)
         const tl = gsap.timeline({ onComplete: startKinetic });
-        tl.from(mainChars.map(c => c), {
-            yPercent: 110,
-            duration: 0.9,
-            ease: 'power4.out',
-            stagger: 0.08,
+        tl.from(mainChars, {
+            yPercent: 28,
+            opacity: 0,
+            filter: 'blur(14px)',
+            duration: 1.1,
+            ease: 'power3.out',
+            stagger: 0.07,
+            clearProps: 'filter,opacity,transform',
         })
-        .from(nameChars.map(c => c), {
-            yPercent: 110,
-            duration: 0.8,
-            ease: 'power4.out',
-            stagger: 0.03,
-        }, 0.25)
+        .from(nameChars, {
+            yPercent: 24,
+            opacity: 0,
+            filter: 'blur(10px)',
+            duration: 0.9,
+            ease: 'power3.out',
+            stagger: 0.025,
+            clearProps: 'filter,opacity,transform',
+        }, 0.35)
         .to('.hero-subtitle', {
             opacity: 1,
             y: 0,
-            duration: 0.8,
+            filter: 'blur(0px)',
+            duration: 0.9,
             ease: 'power3.out',
-            startAt: { y: 24 },
-        }, 0.3)
+            startAt: { y: 16, filter: 'blur(6px)' },
+            clearProps: 'filter',
+        }, 0.6)
         .to('.scroll-indicator', {
             opacity: 1,
             duration: 0.6,
@@ -315,6 +348,34 @@ document.addEventListener('DOMContentLoaded', () => {
     // =====================================================
     if (reducedMotion) drawAllTitles();
     if (!reducedMotion) {
+        // 히어로를 벗어날 때(스크롤에 묶임, 애플 제품 페이지식 물러남): 다음 장면이 올라오는 동안
+        // 제목 덩어리는 살짝 작아지며 초점이 흐려지고, 글자는 가늘어지며(kineticTick의 heroOut) 사라짐
+        if (heroTitle) {
+            const outro = { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 0.5 };
+            // SCROLL 안내는 스크롤을 시작하자마자 사라짐 (요소 자체는 로드 리빌·위아래 흔들림이 쓰므로 자식에 적용)
+            const indicatorKids = gsap.utils.toArray('.scroll-indicator > *');
+            ScrollTrigger.create({
+                ...outro,
+                onUpdate: (self) => {
+                    heroOut = self.progress;
+                    const o = String(Math.max(0, 1 - self.progress * 5));
+                    indicatorKids.forEach((el) => { el.style.opacity = o; });
+                },
+            });
+            // 제목은 스크롤의 절반 속도로만 올라가 화면에 머무는 동안 물러나고(깊이감), 다음 장면이 그 위로 올라옴.
+            // 흐림·투명은 처음엔 천천히, 뒤로 갈수록 빠르게(power2.in) — 처음 몇 px 스크롤로 글자가 흐려지지 않게
+            gsap.timeline({ scrollTrigger: { ...outro, invalidateOnRefresh: true } })
+                .to('.hero-content', { y: () => window.innerHeight * 0.5, ease: 'none', duration: 1 }, 0)
+                .to('.hero-content', {
+                    scale: 0.9,
+                    opacity: 0,
+                    filter: 'blur(12px)',
+                    transformOrigin: 'left center',
+                    ease: 'power2.in',
+                    duration: 0.8,
+                }, 0);
+        }
+
         // 섹션 제목: 가는 밑줄이 왼쪽에서 그어지고(CSS 전환) 제목은 아래에서 올라옴
         gsap.utils.toArray('.section-title').forEach((el) => {
             gsap.from(el, {

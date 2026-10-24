@@ -384,15 +384,10 @@ html.js .hero-title:not(.is-split) {
     visibility: hidden;
 }
 
+/* 글자 감싸개: 잘라내지 않음 — 블러 인의 흐린 가장자리와 굵어지는 글자가 잘리지 않게 */
 .hero-title .char-mask {
     display: inline-block;
-    overflow: hidden;
     vertical-align: bottom;
-}
-
-/* 리빌 완료 후에는 클리핑 해제 — 웨이트가 굵어질 때 글자 좌우가 잘리지 않도록 */
-.hero-title.is-revealed .char-mask {
-    overflow: visible;
 }
 
 .hero-title .char {
