@@ -1,7 +1,7 @@
 /* =========================================================
    LAB-OE Portfolio ver02 — main.js
    구성: 튜닝 파라미터 / 테마 토글(원형 전환) / 인트로 오버레이 /
-        히어로 키네틱 타이포 + 빛 손전등 / Lenis+ScrollTrigger /
+        히어로 키네틱 타이포 / Lenis+ScrollTrigger /
         대표작 영상 / 섹션 진행 표시 / 리스트 호버 프리뷰 /
         커스텀 커서 / 이미지 모달(제자리 확대·스와이프) / 푸터
 ========================================================= */
@@ -20,8 +20,6 @@ const PARAMS = {
     SCROLL_LERP: 0.1,     // Lenis 스크롤 감쇠
     CURSOR_LERP: 0.15,    // 커스텀 커서 추적 지연
     INTRO_DURATION: 0.8,  // 인트로 오버레이 걷힘 시간(s)
-    LIGHT_LERP: 0.08,     // 히어로 빛 손전등 추적 지연
-    LIGHT_DRIFT: 0.21,    // 손전등이 가만히 있을 때 떠다니는 속도(rad/s)
     PREVIEW_TILT: 0.05,   // 호버 프리뷰 기울기: 추적 지연 거리(px) × 이 값 = 각도(°)
     PREVIEW_TILT_MAX: 7,  // 호버 프리뷰 최대 기울기(°)
     MAGNET: 0.3,          // 푸터 이메일 버튼이 커서 쪽으로 끌려가는 비율
@@ -183,7 +181,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (heroTitle) heroTitle.classList.add('is-revealed');
         if (reducedMotion || heroChars.length === 0) return;
         kineticOn = true;
-        startHeroLight();
     }
 
     function kineticTick(now) {
@@ -221,59 +218,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 c.style.fontVariationSettings = `'wght' ${s.w.toFixed(1)}`;
             }
         });
-    }
-
-    // =====================================================
-    // 히어로 — 빛 손전등 ([사물]+[빛]): 커서 주변 원 안에서만 작품 사진이 드러남.
-    // 원(틀)과 안쪽 사진을 반대로 옮겨 사진은 제자리에 고정된 것처럼 보임 — transform만 써서 다시 그리기 없음
-    // =====================================================
-    const hero = document.querySelector('.hero');
-    const heroLight = document.querySelector('.hero-light');
-    const heroLightImg = heroLight ? heroLight.querySelector('.hero-light-img') : null;
-    const light = { x: 0, y: 0, on: false, r: 0, w: 0, h: 0 };
-
-    function sizeHeroLight() {
-        if (!hero || !heroLight || !heroLightImg) return;
-        light.w = hero.offsetWidth;
-        light.h = hero.offsetHeight;
-        light.r = heroLight.offsetWidth / 2;
-        heroLightImg.style.width = `${light.w}px`;
-        heroLightImg.style.height = `${light.h}px`;
-    }
-
-    function startHeroLight() {
-        if (!heroLight || !heroLightImg) return;
-        sizeHeroLight();
-        light.x = light.w * 0.5;
-        light.y = light.h * 0.45;
-        light.on = true;
-        gsap.to(heroLight, { opacity: 1, duration: 1.4, ease: 'power2.out' });
-        window.addEventListener('resize', sizeHeroLight, { passive: true });
-    }
-
-    function heroLightTick(now) {
-        if (!light.on || !heroVisible) return;
-        const relX = mouse.x;
-        const relY = mouse.y + window.scrollY - hero.offsetTop;
-        const inHero = relY >= 0 && relY <= light.h;
-        // 커서(폰은 손끝)가 히어로 위에서 움직이는 중이면 따라가고, 아니면 천천히 떠다님
-        const follow = inHero && (isDesktop ? (now - lastMouseMove < PARAMS.IDLE_DELAY) : touchActive);
-        let tx;
-        let ty;
-        if (follow) {
-            tx = relX;
-            ty = relY;
-        } else {
-            const t = (now / 1000) * PARAMS.LIGHT_DRIFT;
-            tx = light.w * (0.5 + 0.32 * Math.sin(t));
-            ty = light.h * (0.45 + 0.2 * Math.sin(t * 1.57 + 1.3));
-        }
-        light.x += (tx - light.x) * PARAMS.LIGHT_LERP;
-        light.y += (ty - light.y) * PARAMS.LIGHT_LERP;
-        const ox = light.x - light.r;
-        const oy = light.y - light.r;
-        heroLight.style.transform = `translate3d(${ox.toFixed(1)}px, ${oy.toFixed(1)}px, 0)`;
-        heroLightImg.style.transform = `translate3d(${(-ox).toFixed(1)}px, ${(-oy).toFixed(1)}px, 0)`;
     }
 
     // =====================================================
@@ -793,7 +737,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function masterTick(now) {
         kineticTick(now);
-        heroLightTick(now);
 
         if (isDesktop && previewActive && preview) {
             previewPos.x += (mouse.x - previewPos.x) * PARAMS.PREVIEW_LERP;

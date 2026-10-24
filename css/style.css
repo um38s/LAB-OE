@@ -360,42 +360,6 @@ html:not(.js) #intro-overlay {
     justify-content: center;
     position: relative;
     padding: 0 var(--gutter);
-    overflow: hidden; /* 빛 손전등 원이 히어로 밖으로 나가지 않게 */
-}
-
-.hero-content,
-.scroll-indicator {
-    z-index: 1;
-}
-
-.hero-content {
-    position: relative;
-}
-
-/* 빛 손전등: 원(틀)은 커서를 따라가고 안쪽 사진은 반대로 움직여 제자리에 고정된 것처럼 보임.
-   가장자리는 부드럽게 사라지는 원형 마스크 (마스크는 고정 → 움직일 때 다시 그리지 않음) */
-.hero-light {
-    --light-d: clamp(240px, 30vw, 460px);
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: var(--light-d);
-    height: var(--light-d);
-    overflow: hidden;
-    pointer-events: none;
-    opacity: 0; /* JS가 히어로 리빌 후 서서히 켬 (모션 최소화면 꺼진 채) */
-    -webkit-mask-image: radial-gradient(closest-side, #000 30%, rgba(0, 0, 0, 0.55) 62%, transparent 100%);
-    mask-image: radial-gradient(closest-side, #000 30%, rgba(0, 0, 0, 0.55) 62%, transparent 100%);
-    will-change: transform, opacity;
-}
-
-.hero-light-img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    max-width: none;
-    object-fit: cover;
-    will-change: transform;
 }
 
 .hero-title {
