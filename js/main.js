@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const ov = document.getElementById('intro-overlay');
         if (ov) ov.remove();
         const title = document.querySelector('.hero-title');
-        if (title) title.classList.add('is-split', 'is-revealed');
+        if (title) title.classList.add('is-split');
         document.querySelectorAll('.hero-subtitle, .scroll-indicator').forEach((el) => {
             el.style.opacity = 1;
         });
@@ -184,8 +184,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function startKinetic() {
-        // 리빌 완료 표시 후 키네틱 웨이트 시작
-        if (heroTitle) heroTitle.classList.add('is-revealed');
         if (reducedMotion || heroChars.length === 0) return;
         kineticOn = true;
     }
