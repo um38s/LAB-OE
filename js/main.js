@@ -1,8 +1,9 @@
 /* =========================================================
    LAB-OE Portfolio ver02 — main.js
-   구성: 튜닝 파라미터 / 테마 토글 / 인트로 오버레이 /
-        히어로 키네틱 타이포 / Lenis+ScrollTrigger /
-        리스트 호버 프리뷰 / 커스텀 커서 / 이미지 모달
+   구성: 튜닝 파라미터 / 테마 토글(원형 전환) / 인트로 오버레이 /
+        히어로 키네틱 타이포 + 빛 손전등 / Lenis+ScrollTrigger /
+        대표작 영상 / 섹션 진행 표시 / 리스트 호버 프리뷰 /
+        커스텀 커서 / 이미지 모달(제자리 확대·스와이프) / 푸터
 ========================================================= */
 
 // ---------- 튜닝 파라미터 (명세 9) ----------
@@ -19,6 +20,11 @@ const PARAMS = {
     SCROLL_LERP: 0.1,     // Lenis 스크롤 감쇠
     CURSOR_LERP: 0.15,    // 커스텀 커서 추적 지연
     INTRO_DURATION: 0.8,  // 인트로 오버레이 걷힘 시간(s)
+    LIGHT_LERP: 0.08,     // 히어로 빛 손전등 추적 지연
+    LIGHT_DRIFT: 0.21,    // 손전등이 가만히 있을 때 떠다니는 속도(rad/s)
+    PREVIEW_TILT: 0.05,   // 호버 프리뷰 기울기: 추적 지연 거리(px) × 이 값 = 각도(°)
+    PREVIEW_TILT_MAX: 7,  // 호버 프리뷰 최대 기울기(°)
+    MAGNET: 0.3,          // 푸터 이메일 버튼이 커서 쪽으로 끌려가는 비율
 };
 
 const isDesktop = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
@@ -38,13 +44,36 @@ window.addEventListener('mousemove', (e) => {
 // ---------- 테마 토글 ----------
 const themeToggle = document.getElementById('theme-toggle');
 if (themeToggle) {
-    themeToggle.addEventListener('click', () => {
-        const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    const applyTheme = (next) => {
         document.documentElement.setAttribute('data-theme', next);
-        localStorage.setItem('theme', next);
+        try { localStorage.setItem('theme', next); } catch (e) { /* 저장 불가(사생활 보호 모드 등)여도 전환은 진행 */ }
         // 모바일 브라우저 상단 UI 색 동기화 (초기값은 head 인라인 스크립트가 설정)
         const meta = document.getElementById('meta-theme-color');
         if (meta) meta.setAttribute('content', next === 'dark' ? '#141414' : '#F5F4F0');
+    };
+
+    themeToggle.addEventListener('click', () => {
+        const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        // View Transitions 미지원·모션 최소화: 기존처럼 색만 부드럽게 전환
+        if (!document.startViewTransition || reducedMotion) {
+            applyTheme(next);
+            return;
+        }
+        // 토글 버튼에서 새 테마가 빛처럼 원형으로 번져 나감
+        const r = themeToggle.getBoundingClientRect();
+        const x = r.left + r.width / 2;
+        const y = r.top + r.height / 2;
+        const end = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y));
+        const root = document.documentElement;
+        root.classList.add('theme-switching'); // 스냅샷이 색 전환 중간값으로 찍히지 않게 transition 정지
+        const vt = document.startViewTransition(() => applyTheme(next));
+        vt.ready.then(() => {
+            root.animate(
+                { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${end}px at ${x}px ${y}px)`] },
+                { duration: 750, easing: 'cubic-bezier(0.22, 1, 0.36, 1)', pseudoElement: '::view-transition-new(root)' },
+            );
+        }).catch(() => {});
+        vt.finished.finally(() => root.classList.remove('theme-switching'));
     });
 }
 
@@ -58,6 +87,18 @@ if (typeof Lenis !== 'undefined' && !reducedMotion) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    // 푸터 서울 현재 시각 (GSAP과 무관 — CDN 실패해도 동작)
+    const timeEl = document.getElementById('local-time');
+    if (timeEl) {
+        const fmt = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Seoul', hour: '2-digit', minute: '2-digit', hour12: false });
+        const tickTime = () => { timeEl.textContent = fmt.format(new Date()); };
+        tickTime();
+        setInterval(tickTime, 15000);
+    }
+
+    // 섹션 제목 밑줄을 그어진 상태로 즉시 표시 (모션 없음 경로 공용)
+    const drawAllTitles = () => document.querySelectorAll('.section-title').forEach((el) => el.classList.add('is-drawn'));
+
     // CDN 로드 실패 시에도 콘텐츠는 보여야 함 — 오버레이 제거 + 히어로 즉시 표시 후 종료
     if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
         const ov = document.getElementById('intro-overlay');
@@ -67,6 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.hero-subtitle, .scroll-indicator').forEach((el) => {
             el.style.opacity = 1;
         });
+        drawAllTitles();
         return;
     }
     gsap.registerPlugin(ScrollTrigger);
@@ -141,6 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (heroTitle) heroTitle.classList.add('is-revealed');
         if (reducedMotion || heroChars.length === 0) return;
         kineticOn = true;
+        startHeroLight();
     }
 
     function kineticTick(now) {
@@ -178,6 +221,59 @@ document.addEventListener('DOMContentLoaded', () => {
                 c.style.fontVariationSettings = `'wght' ${s.w.toFixed(1)}`;
             }
         });
+    }
+
+    // =====================================================
+    // 히어로 — 빛 손전등 ([사물]+[빛]): 커서 주변 원 안에서만 작품 사진이 드러남.
+    // 원(틀)과 안쪽 사진을 반대로 옮겨 사진은 제자리에 고정된 것처럼 보임 — transform만 써서 다시 그리기 없음
+    // =====================================================
+    const hero = document.querySelector('.hero');
+    const heroLight = document.querySelector('.hero-light');
+    const heroLightImg = heroLight ? heroLight.querySelector('.hero-light-img') : null;
+    const light = { x: 0, y: 0, on: false, r: 0, w: 0, h: 0 };
+
+    function sizeHeroLight() {
+        if (!hero || !heroLight || !heroLightImg) return;
+        light.w = hero.offsetWidth;
+        light.h = hero.offsetHeight;
+        light.r = heroLight.offsetWidth / 2;
+        heroLightImg.style.width = `${light.w}px`;
+        heroLightImg.style.height = `${light.h}px`;
+    }
+
+    function startHeroLight() {
+        if (!heroLight || !heroLightImg) return;
+        sizeHeroLight();
+        light.x = light.w * 0.5;
+        light.y = light.h * 0.45;
+        light.on = true;
+        gsap.to(heroLight, { opacity: 1, duration: 1.4, ease: 'power2.out' });
+        window.addEventListener('resize', sizeHeroLight, { passive: true });
+    }
+
+    function heroLightTick(now) {
+        if (!light.on || !heroVisible) return;
+        const relX = mouse.x;
+        const relY = mouse.y + window.scrollY - hero.offsetTop;
+        const inHero = relY >= 0 && relY <= light.h;
+        // 커서(폰은 손끝)가 히어로 위에서 움직이는 중이면 따라가고, 아니면 천천히 떠다님
+        const follow = inHero && (isDesktop ? (now - lastMouseMove < PARAMS.IDLE_DELAY) : touchActive);
+        let tx;
+        let ty;
+        if (follow) {
+            tx = relX;
+            ty = relY;
+        } else {
+            const t = (now / 1000) * PARAMS.LIGHT_DRIFT;
+            tx = light.w * (0.5 + 0.32 * Math.sin(t));
+            ty = light.h * (0.45 + 0.2 * Math.sin(t * 1.57 + 1.3));
+        }
+        light.x += (tx - light.x) * PARAMS.LIGHT_LERP;
+        light.y += (ty - light.y) * PARAMS.LIGHT_LERP;
+        const ox = light.x - light.r;
+        const oy = light.y - light.r;
+        heroLight.style.transform = `translate3d(${ox.toFixed(1)}px, ${oy.toFixed(1)}px, 0)`;
+        heroLightImg.style.transform = `translate3d(${(-ox).toFixed(1)}px, ${(-oy).toFixed(1)}px, 0)`;
     }
 
     // =====================================================
@@ -273,14 +369,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // =====================================================
     // 스크롤 진입 애니메이션 (명세 4)
     // =====================================================
+    if (reducedMotion) drawAllTitles();
     if (!reducedMotion) {
+        // 섹션 제목: 가는 밑줄이 왼쪽에서 그어지고(CSS 전환) 제목은 아래에서 올라옴
         gsap.utils.toArray('.section-title').forEach((el) => {
             gsap.from(el, {
-                y: 20,
+                y: 14,
                 opacity: 0,
                 duration: 0.8,
                 ease: 'power3.out',
-                scrollTrigger: { trigger: el, start: 'top 85%', once: true },
+                scrollTrigger: {
+                    trigger: el,
+                    start: 'top 85%',
+                    once: true,
+                    onEnter: () => el.classList.add('is-drawn'),
+                },
             });
         });
 
@@ -316,6 +419,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // 대표작: 살짝 작은 틀 → 리스트 폭으로 열림(스크롤 연동) + 보일 때만 영상 재생
     // =====================================================
     const works = gsap.utils.toArray('.work');
+    // 모달이 열려 있는 동안 영상 정지 → 닫으면 화면에 보이던 것만 다시 재생 (모달 코드에서 호출)
+    let pauseWorkVideos = () => {};
+    let resumeWorkVideos = () => {};
     if (works.length) {
         if (!reducedMotion) {
             works.forEach((work) => {
@@ -371,23 +477,78 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }, { rootMargin: '600px 0px' });
             // 보일 때만 재생, 벗어나면 정지 (배터리·GPU 절약)
+            let modalOpen = false;
+            const playVideo = (v) => {
+                loadVideo(v);
+                const p = v.play();
+                if (p) p.catch(() => {});
+            };
             const player = new IntersectionObserver((entries) => {
                 entries.forEach((e) => {
                     const v = e.target;
-                    if (e.isIntersecting) {
-                        loadVideo(v);
-                        const p = v.play();
-                        if (p) p.catch(() => {});
-                    } else {
-                        v.pause();
-                    }
+                    v.dataset.inView = e.isIntersecting ? '1' : '0';
+                    if (e.isIntersecting && !modalOpen) playVideo(v);
+                    else v.pause();
                 });
             }, { threshold: 0.15 });
+            pauseWorkVideos = () => {
+                modalOpen = true;
+                videos.forEach((v) => v.pause());
+            };
+            resumeWorkVideos = () => {
+                modalOpen = false;
+                videos.forEach((v) => { if (v.dataset.inView === '1') playVideo(v); });
+            };
             videos.forEach((v) => {
                 loader.observe(v);
                 player.observe(v);
             });
         }
+    }
+
+    // =====================================================
+    // 섹션 진행 표시 (데스크톱 왼쪽 아래): "03 / 07  MEDIA ART EXHIBITIONS"
+    // 히어로를 지나면 나타나고 푸터에 닿으면 사라짐. 번호는 위/아래로 굴러 바뀜
+    // =====================================================
+    const progressEl = document.querySelector('.section-progress');
+    const progressSections = gsap.utils.toArray('.section-title').map((t) => t.closest('section')).filter(Boolean);
+    if (progressEl && progressSections.length && isDesktop) {
+        const curEl = progressEl.querySelector('.sp-cur');
+        const totalEl = progressEl.querySelector('.sp-total');
+        const nameEl = progressEl.querySelector('.sp-name');
+        const pad = (n) => String(n).padStart(2, '0');
+        const names = progressSections.map((s) => s.querySelector('.section-title').textContent.trim());
+        let activeIdx = -1;
+        totalEl.textContent = pad(progressSections.length);
+
+        const setActive = (i) => {
+            if (i === activeIdx) return;
+            const dir = i > activeIdx ? 1 : -1;
+            activeIdx = i;
+            curEl.textContent = pad(i + 1);
+            nameEl.textContent = names[i];
+            if (!reducedMotion) {
+                gsap.fromTo(curEl, { xPercent: -100 * dir, opacity: 0 }, { xPercent: 0, opacity: 1, duration: 0.5, ease: 'power3.out', overwrite: true });
+                gsap.fromTo(nameEl, { opacity: 0 }, { opacity: 1, duration: 0.5, ease: 'power2.out', overwrite: true });
+            }
+        };
+
+        progressSections.forEach((sec, i) => {
+            ScrollTrigger.create({
+                trigger: sec,
+                start: 'top 55%',
+                end: 'bottom 55%',
+                onToggle: (self) => { if (self.isActive) setActive(i); },
+            });
+        });
+        const footerEl = document.querySelector('.footer');
+        ScrollTrigger.create({
+            trigger: progressSections[0],
+            start: 'top 80%',
+            endTrigger: footerEl || progressSections[progressSections.length - 1],
+            end: footerEl ? 'top 85%' : 'bottom 55%',
+            onToggle: (self) => progressEl.classList.toggle('is-visible', self.isActive),
+        });
     }
 
     // =====================================================
@@ -480,7 +641,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function showPreview(src) {
         if (!preview || !previewImg) return;
-        if (previewImg.getAttribute('src') !== src) previewImg.setAttribute('src', src);
+        if (previewImg.getAttribute('src') !== src) {
+            // 이미 떠 있는 프리뷰에서 행만 바뀌면 새 사진이 아래에서 커튼처럼 올라오며 교체
+            const swapping = !reducedMotion && gsap.getProperty(previewInner, 'opacity') > 0.2;
+            previewImg.setAttribute('src', src);
+            if (swapping) {
+                gsap.fromTo(previewImg, { clipPath: 'inset(100% 0% 0% 0%)' }, {
+                    clipPath: 'inset(0% 0% 0% 0%)', duration: 0.45, ease: 'power3.out', overwrite: true,
+                });
+            }
+        }
         if (!previewActive) {
             // 등장 시 현재 커서 위치에서 시작
             previewPos.x = mouse.x;
@@ -538,7 +708,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.addEventListener('mouseover', (e) => {
             const interactive = e.target.closest('a, button');
             const inList = e.target.closest('.exhibition-list');
-            cursorEl.classList.toggle('is-grown', !!interactive && !inList);
+            const onWork = e.target.closest('.work-link'); // 대표작 영상 위: "View" 원형 커서
+            cursorEl.classList.toggle('is-label', !!onWork);
+            cursorEl.classList.toggle('is-grown', !!interactive && !inList && !onWork);
         });
         document.addEventListener('mouseleave', () => {
             cursorEl.classList.add('is-hidden');
@@ -617,14 +789,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // =====================================================
     // 통합 rAF 루프: 키네틱 + 프리뷰 추적 + 커서 추적
     // =====================================================
+    let previewTilt = 0;
+
     function masterTick(now) {
         kineticTick(now);
+        heroLightTick(now);
 
         if (isDesktop && previewActive && preview) {
             previewPos.x += (mouse.x - previewPos.x) * PARAMS.PREVIEW_LERP;
             previewPos.y += (mouse.y - previewPos.y) * PARAMS.PREVIEW_LERP;
+            // 커서를 빨리 움직일수록(추적 지연 거리가 클수록) 진행 방향으로 살짝 기울어짐
+            const tiltTarget = reducedMotion ? 0 : Math.max(-PARAMS.PREVIEW_TILT_MAX,
+                Math.min(PARAMS.PREVIEW_TILT_MAX, (mouse.x - previewPos.x) * PARAMS.PREVIEW_TILT));
+            previewTilt += (tiltTarget - previewTilt) * 0.12;
             preview.style.transform =
-                `translate3d(${(previewPos.x - 170).toFixed(1)}px, ${(previewPos.y - 113).toFixed(1)}px, 0)`;
+                `translate3d(${(previewPos.x - 170).toFixed(1)}px, ${(previewPos.y - 113).toFixed(1)}px, 0) rotate(${previewTilt.toFixed(2)}deg)`;
         }
         // 커서 도트: 데스크톱은 상시, 모바일은 터치 중에만 추적
         if (cursorEl && (isDesktop || touchActive)) {
@@ -657,9 +836,62 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentImageIndex = 0;
     let lastFocusedEl = null; // 모달 닫을 때 포커스 복귀 지점
 
-    const updateModalImage = (index) => {
+    // 크기를 알 수 있을 때(디코드 후) 애니메이션 시작
+    const whenImageReady = (fn) => {
+        if (!modalImg) return;
+        if (modalImg.complete && modalImg.naturalWidth) fn();
+        else if (modalImg.decode) modalImg.decode().then(fn, fn);
+        else modalImg.addEventListener('load', fn, { once: true });
+    };
+
+    // 표시 크기를 사진 비율로 직접 정함 — 축소본(680px)에서 원본으로 바꿔 끼워도 크기가 튀지 않게
+    const fitModalImage = () => {
+        if (!modalImg || !modalImg.naturalWidth) return;
+        modalImg.style.width = '';
+        modalImg.style.height = '';
+        const cs = getComputedStyle(modalImg);
+        const maxW = parseFloat(cs.maxWidth) || window.innerWidth * 0.78;
+        const maxH = parseFloat(cs.maxHeight) || window.innerHeight * 0.7;
+        const ar = modalImg.naturalWidth / modalImg.naturalHeight;
+        const w = Math.min(maxW, maxH * ar);
+        modalImg.style.width = `${w.toFixed(1)}px`;
+        modalImg.style.height = `${(w / ar).toFixed(1)}px`;
+    };
+    window.addEventListener('resize', () => {
+        if (modal && modal.classList.contains('show')) fitModalImage();
+    }, { passive: true });
+
+    // 원본은 수 MB~17MB라 디코드가 늦음 → 축소본을 바로 띄워 애니메이션을 시작하고,
+    // 원본이 준비되면 같은 자리에서 바꿔 끼움 (그 사이 다른 사진으로 넘어갔으면 무시)
+    let fullLoadToken = 0;
+    const loadFullImage = (full) => {
+        const token = ++fullLoadToken;
+        const loader = new Image();
+        loader.src = full;
+        const swap = () => {
+            if (token === fullLoadToken && modal && modal.classList.contains('show')) modalImg.src = full;
+        };
+        if (loader.decode) loader.decode().then(swap, () => {});
+        else loader.onload = swap;
+    };
+
+    // dir: 1 = 다음(오른쪽에서 들어옴), -1 = 이전, 0 = 애니메이션 없이 교체
+    const updateModalImage = (index, dir = 0) => {
         if (modalImg && currentImageArray[index]) {
-            modalImg.src = currentImageArray[index].trim();
+            const full = currentImageArray[index].trim();
+            modalImg.src = thumbSrc(full);
+            loadFullImage(full);
+            if (dir && !reducedMotion) {
+                gsap.set(modalImg, { opacity: 0 });
+                whenImageReady(() => {
+                    fitModalImage();
+                    gsap.fromTo(modalImg, { x: 48 * dir, opacity: 0 }, {
+                        x: 0, y: 0, scale: 1, opacity: 1, duration: 0.5, ease: 'power3.out', overwrite: true,
+                    });
+                });
+            } else {
+                whenImageReady(fitModalImage);
+            }
         }
         if (currentImageArray.length > 1) {
             document.querySelectorAll('.indicator-dot').forEach((dot, i) => {
@@ -668,29 +900,64 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const stepImage = (dir) => {
+        if (currentImageArray.length < 2) return;
+        currentImageIndex = (currentImageIndex + dir + currentImageArray.length) % currentImageArray.length;
+        updateModalImage(currentImageIndex, dir);
+    };
+
     if (modalPrev && modalNext) {
         modalPrev.addEventListener('click', (e) => {
             e.stopPropagation();
-            if (currentImageArray.length > 1) {
-                currentImageIndex = (currentImageIndex - 1 + currentImageArray.length) % currentImageArray.length;
-                updateModalImage(currentImageIndex);
-            }
+            stepImage(-1);
         });
         modalNext.addEventListener('click', (e) => {
             e.stopPropagation();
-            if (currentImageArray.length > 1) {
-                currentImageIndex = (currentImageIndex + 1) % currentImageArray.length;
-                updateModalImage(currentImageIndex);
-            }
+            stepImage(1);
         });
     }
 
     if (modal && modalImg && closeBtn) {
+        // 모달 사진이 날아올 출발 위치: 대표작 영상 틀 또는 떠 있는 호버 프리뷰 (없으면 제자리에서 등장)
+        const getOpenSourceRect = (link) => {
+            const media = link.querySelector('.work-media');
+            if (media) return media.getBoundingClientRect();
+            if (previewImg && previewInner && gsap.getProperty(previewInner, 'opacity') > 0.2) {
+                return previewImg.getBoundingClientRect();
+            }
+            return null;
+        };
+
+        // 클릭한 자리(프리뷰·영상)에서 사진이 화면 가운데로 커지며 자리 잡음
+        const animateModalIn = (from) => {
+            gsap.killTweensOf(modalImg);
+            gsap.set(modalImg, { opacity: 0, x: 0, y: 0, scale: 1 });
+            whenImageReady(() => {
+                if (!modal.classList.contains('show')) return;
+                fitModalImage();
+                const to = modalImg.getBoundingClientRect();
+                if (!from || reducedMotion || !to.width) {
+                    gsap.fromTo(modalImg, { opacity: 0, scale: reducedMotion ? 1 : 0.97 }, {
+                        opacity: 1, scale: 1, duration: 0.4, ease: 'power3.out',
+                    });
+                    return;
+                }
+                const s = from.width / to.width;
+                const dx = (from.left + from.width / 2) - (to.left + to.width / 2);
+                const dy = (from.top + from.height / 2) - (to.top + to.height / 2);
+                gsap.fromTo(modalImg, { x: dx, y: dy, scale: s, opacity: 1 }, {
+                    x: 0, y: 0, scale: 1, duration: 0.75, ease: 'expo.out',
+                });
+            });
+        };
+
         const openModalFromLink = (link) => {
             const dataImg = link.getAttribute('data-img');
             const fallbackImg = link.querySelector('img');
             const imgSrc = dataImg || (fallbackImg ? fallbackImg.getAttribute('src') : null);
             if (!imgSrc) return;
+            const fromRect = getOpenSourceRect(link); // 프리뷰를 숨기기 전에 위치 기록
+            gsap.set(modalImg, { opacity: 0 });
 
             currentImageArray = imgSrc.split(',').map((s) => s.trim()).filter(Boolean);
             currentImageIndex = 0;
@@ -706,8 +973,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (i === 0) dot.classList.add('active');
                         dot.addEventListener('click', (evt) => {
                             evt.stopPropagation();
+                            const dir = Math.sign(i - currentImageIndex);
                             currentImageIndex = i;
-                            updateModalImage(currentImageIndex);
+                            updateModalImage(currentImageIndex, dir);
                         });
                         indicatorsContainer.appendChild(dot);
                     });
@@ -735,6 +1003,8 @@ document.addEventListener('DOMContentLoaded', () => {
             clearRowStates();
             lastFocusedEl = document.activeElement;
             modal.classList.add('show');
+            animateModalIn(fromRect);
+            pauseWorkVideos();
             closeBtn.focus();
             if (lenis) lenis.stop();
         };
@@ -825,8 +1095,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }, { passive: true });
 
         const closeModal = () => {
-            modal.classList.remove('show');
+            modal.classList.remove('show', 'is-dragging');
+            modal.style.opacity = ''; // 아래로 끌던 중 닫혀도 CSS 페이드가 이어지게
+            if (!reducedMotion) gsap.to(modalImg, { scale: 0.96, duration: 0.35, ease: 'power2.out', overwrite: true });
+            resumeWorkVideos();
+            fullLoadToken++; // 아직 받는 중인 원본은 바꿔 끼우지 않음
             setTimeout(() => {
+                gsap.set(modalImg, { clearProps: 'transform,opacity,width,height' });
                 if (modalImg) modalImg.src = '';
                 if (indicatorsContainer) indicatorsContainer.innerHTML = '';
                 if (modalYoutube) modalYoutube.style.display = 'none';
@@ -878,5 +1153,69 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const wrapper = document.querySelector('.modal-body-wrapper');
         if (wrapper) wrapper.addEventListener('click', (e) => e.stopPropagation());
+
+        // ---- 터치 스와이프: 좌우 = 이전/다음, 아래로 끌기 = 닫기 (손을 뗄 때까지 사진이 손끝을 따라옴) ----
+        let swipe = null;
+        modal.addEventListener('touchstart', (e) => {
+            if (e.touches.length !== 1 || !modal.classList.contains('show')) return;
+            const t = e.touches[0];
+            swipe = { x0: t.clientX, y0: t.clientY, dx: 0, dy: 0, axis: null };
+        }, { passive: true });
+
+        modal.addEventListener('touchmove', (e) => {
+            if (!swipe) return;
+            const t = e.touches[0];
+            swipe.dx = t.clientX - swipe.x0;
+            swipe.dy = t.clientY - swipe.y0;
+            if (!swipe.axis && Math.hypot(swipe.dx, swipe.dy) > 10) {
+                swipe.axis = Math.abs(swipe.dx) > Math.abs(swipe.dy) ? 'x' : 'y';
+                if (swipe.axis === 'y') modal.classList.add('is-dragging');
+            }
+            if (swipe.axis === 'y') {
+                const d = Math.max(0, swipe.dy);
+                gsap.set(modalImg, { y: d, scale: 1 - Math.min(d / 1500, 0.12) });
+                modal.style.opacity = String(1 - Math.min(d / 700, 0.6));
+            } else if (swipe.axis === 'x' && currentImageArray.length > 1) {
+                gsap.set(modalImg, { x: swipe.dx * 0.6 });
+            }
+        }, { passive: true });
+
+        const endSwipe = () => {
+            if (!swipe) return;
+            const { axis, dx, dy } = swipe;
+            swipe = null;
+            modal.classList.remove('is-dragging');
+            if (axis === 'y') {
+                if (dy > 90) {
+                    closeModal();
+                    return;
+                }
+                modal.style.opacity = '';
+                gsap.to(modalImg, { y: 0, scale: 1, duration: 0.5, ease: 'back.out(1.6)', overwrite: true });
+            } else if (axis === 'x' && currentImageArray.length > 1) {
+                if (Math.abs(dx) > 50) stepImage(dx < 0 ? 1 : -1);
+                else gsap.to(modalImg, { x: 0, duration: 0.4, ease: 'back.out(1.6)', overwrite: true });
+            }
+        };
+        modal.addEventListener('touchend', endSwipe, { passive: true });
+        modal.addEventListener('touchcancel', endSwipe, { passive: true });
+    }
+
+    // =====================================================
+    // 푸터 — 이메일 버튼이 커서 쪽으로 살짝 끌려옴 (데스크톱), 떠나면 탄성 있게 제자리
+    // =====================================================
+    const pill = document.querySelector('.contact-pill');
+    if (pill && isDesktop && !reducedMotion) {
+        const pillLabel = pill.querySelector('.contact-pill-label');
+        pill.addEventListener('mousemove', (e) => {
+            const r = pill.getBoundingClientRect();
+            const dx = e.clientX - (r.left + r.width / 2);
+            const dy = e.clientY - (r.top + r.height / 2);
+            gsap.to(pill, { x: dx * PARAMS.MAGNET, y: dy * PARAMS.MAGNET * 1.2, duration: 0.5, ease: 'power3.out', overwrite: 'auto' });
+            if (pillLabel) gsap.to(pillLabel, { x: dx * PARAMS.MAGNET * 0.4, y: dy * PARAMS.MAGNET * 0.5, duration: 0.5, ease: 'power3.out', overwrite: 'auto' });
+        });
+        pill.addEventListener('mouseleave', () => {
+            gsap.to([pill, pillLabel].filter(Boolean), { x: 0, y: 0, duration: 0.9, ease: 'elastic.out(1, 0.4)', overwrite: 'auto' });
+        });
     }
 });

@@ -51,7 +51,7 @@
     <link rel="stylesheet" crossorigin
         href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
 
-    <link rel="stylesheet" href="css/style.css?v=20261024b">
+    <link rel="stylesheet" href="css/style.css?v=20261024c">
 
     <!-- GSAP + ScrollTrigger (defer: HTML 파싱 비차단, 실행 순서는 문서 순서 보장) -->
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
@@ -75,7 +75,13 @@
     </header>
 
     <!-- 커스텀 커서 (데스크톱 전용) -->
-    <div id="cursor" aria-hidden="true"><div class="cursor-dot"></div></div>
+    <div id="cursor" aria-hidden="true"><div class="cursor-dot"></div><span class="cursor-label">View</span></div>
+
+    <!-- 섹션 진행 표시 (데스크톱 왼쪽 아래, JS가 번호·이름 갱신) -->
+    <div class="section-progress" aria-hidden="true">
+        <span class="sp-num"><span class="sp-cur">01</span></span><span class="sp-sep">/</span><span class="sp-total">07</span>
+        <span class="sp-name">DESIGN PHILOSOPHY</span>
+    </div>
 
     <!-- 리스트 호버 이미지 프리뷰 (데스크톱 전용) -->
     <div id="hover-preview" aria-hidden="true">
@@ -90,6 +96,8 @@
 
             <!-- Hero Section -->
             <section class="hero">
+                <!-- 빛 손전등: 커서(폰은 손끝, 가만히 두면 천천히 떠다님) 주변 원 안에서만 작품 사진이 드러남 -->
+                <div class="hero-light" aria-hidden="true"><img class="hero-light-img" src="img/works/w03_kangwonland.webp" alt="" decoding="async"></div>
                 <div class="hero-content">
                     <h1 class="hero-title">LAB OE<br><span class="hero-title-name">KIM YOUNG TAE</span></h1>
                     <p class="hero-subtitle">exhibition designer &amp; media artist</p>
@@ -291,12 +299,16 @@
 
             <!-- Footer -->
             <footer class="footer">
+                <h2 class="footer-cta">Let’s work<br>together</h2>
+                <div class="footer-contact">
+                    <a href="mailto:um38ss@daum.net" class="contact-pill" aria-label="Send email to um38ss@daum.net"><span class="contact-pill-label">um38ss@daum.net</span></a>
+                </div>
                 <div class="footer-links">
-                    <a href="mailto:um38ss@daum.net" class="contact-link" aria-label="Send email to um38ss@daum.net">um38ss@daum.net</a>
                     <div class="sns-links">
                         <a href="https://www.instagram.com/lab_oe/" target="_blank" rel="noopener">Instagram&nbsp;↗</a>
                         <a href="https://www.youtube.com/@_laboe4430/shorts" target="_blank" rel="noopener">YouTube&nbsp;↗</a>
                     </div>
+                    <p class="local-time">Seoul <time id="local-time">--:--</time> KST</p>
                 </div>
                 <p class="copyright">© 2026 KIM YOUNG TAE. All rights reserved.</p>
             </footer>
@@ -320,7 +332,7 @@
         </div>
     </div>
 
-    <script defer src="js/main.js?v=20261024b"></script>
+    <script defer src="js/main.js?v=20261024c"></script>
 </body>
 
 </html>
