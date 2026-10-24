@@ -51,7 +51,7 @@
     <link rel="stylesheet" crossorigin
         href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
 
-    <link rel="stylesheet" href="css/style.css?v=20260906a">
+    <link rel="stylesheet" href="css/style.css?v=20261024a">
 
     <!-- GSAP + ScrollTrigger (defer: HTML 파싱 비차단, 실행 순서는 문서 순서 보장) -->
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
@@ -132,6 +132,65 @@
                     <span class="statement-cross" aria-hidden="true">✕</span>
                     <span class="statement-term">Media Art</span>
                 </p>
+            </section>
+
+            <!-- Selected Works: 대표작 — 스크롤하면 리스트 폭에서 화면 가득으로 열리는 6초 반복 영상 -->
+            <section class="section-works" aria-labelledby="works-title">
+                <div class="works-head">
+                    <h2 id="works-title" class="section-title">SELECTED WORKS</h2>
+                </div>
+
+                <article class="work">
+                    <a href="#" class="work-link" data-img="img/IMG_001.png" data-youtube="https://youtu.be/IWG60YMttEs" aria-label="서울라이트 광화문 세종 파빌리온 이미지 보기">
+                        <div class="work-media">
+                            <video class="work-video" muted loop playsinline preload="none" poster="img/works/w01_seoullight.webp" data-src="img/works/w01_seoullight.mp4"></video>
+                        </div>
+                    </a>
+                    <div class="work-caption">
+                        <span class="work-index">01</span>
+                        <h3 class="work-title">서울라이트 광화문 — 세종 파빌리온</h3>
+                        <span class="work-meta">2025 · 서울</span>
+                    </div>
+                </article>
+
+                <article class="work">
+                    <a href="#" class="work-link" data-img="img/m6_001.png" data-youtube="https://youtu.be/niTaHsrvXlQ" aria-label="국가유산 미디어아트 수원화성 장안문 이미지 보기">
+                        <div class="work-media">
+                            <video class="work-video" muted loop playsinline preload="none" poster="img/works/w02_janganmun.webp" data-src="img/works/w02_janganmun.mp4"></video>
+                        </div>
+                    </a>
+                    <div class="work-caption">
+                        <span class="work-index">02</span>
+                        <h3 class="work-title">국가유산 미디어아트 수원화성 — 장안문</h3>
+                        <span class="work-meta">2024 · 수원</span>
+                    </div>
+                </article>
+
+                <article class="work">
+                    <a href="#" class="work-link" data-img="img/m7_001.png,img/m8_001.png,img/m9_001.png" data-youtube="https://youtu.be/57afv7eFpKw" aria-label="강원랜드 미디어월 이미지 보기">
+                        <div class="work-media">
+                            <video class="work-video" muted loop playsinline preload="none" poster="img/works/w03_kangwonland.webp" data-src="img/works/w03_kangwonland.mp4"></video>
+                        </div>
+                    </a>
+                    <div class="work-caption">
+                        <span class="work-index">03</span>
+                        <h3 class="work-title">강원랜드 미디어월</h3>
+                        <span class="work-meta">2024 · 정선</span>
+                    </div>
+                </article>
+
+                <article class="work">
+                    <a href="#" class="work-link" data-img="img/m13_001.png" data-youtube="https://youtu.be/4kdmkzwMT5Q" aria-label="서울시-KT 광화문광장 미디어아트 이미지 보기">
+                        <div class="work-media">
+                            <video class="work-video" muted loop playsinline preload="none" poster="img/works/w04_gwanghwamun.webp" data-src="img/works/w04_gwanghwamun.mp4"></video>
+                        </div>
+                    </a>
+                    <div class="work-caption">
+                        <span class="work-index">04</span>
+                        <h3 class="work-title">서울시-KT 광화문광장 미디어아트</h3>
+                        <span class="work-meta">2022 · 서울 · 장려상</span>
+                    </div>
+                </article>
             </section>
 
             <!-- Media Art Exhibitions Section -->
@@ -274,7 +333,7 @@
         </div>
     </div>
 
-    <script defer src="js/main.js?v=20260906a"></script>
+    <script defer src="js/main.js?v=20261024a"></script>
 </body>
 
 </html>

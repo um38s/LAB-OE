@@ -552,6 +552,82 @@ html.js .scroll-indicator {
     opacity: 0.78; /* 짙은 회색 — 다크 모드에서도 톤 유지 */
 }
 
+/* ---------- 대표작 (Selected Works) ----------
+   영상 틀은 화면 전체 폭. 처음엔 JS가 clip-path로 리스트 폭(컨테이너 안쪽)에 맞춰 잘라 두고,
+   스크롤하면 화면 가득으로 열림. JS·GSAP이 없으면 잘림 없이 그대로 보임 */
+.section-works {
+    margin-bottom: var(--section-gap);
+}
+
+.works-head {
+    max-width: var(--container-max);
+    margin: 0 auto 56px;
+    padding: 0 var(--gutter);
+}
+
+.work {
+    margin-bottom: clamp(96px, 16vh, 180px);
+}
+
+.work:last-child {
+    margin-bottom: 0;
+}
+
+.work-link {
+    display: block;
+}
+
+.work-media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    max-height: 92vh;
+    overflow: hidden;
+    background-color: #0b0b0c; /* 포스터가 뜨기 전 야간 영상과 이어지는 어두운 바탕 */
+    will-change: clip-path;
+}
+
+.work-video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    will-change: transform;
+}
+
+.work-caption {
+    display: grid;
+    grid-template-columns: 150px 1fr auto;
+    align-items: baseline;
+    gap: 2.5rem;
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: 28px var(--gutter) 0;
+    word-break: keep-all;
+}
+
+.work-index {
+    font-size: 0.85rem;
+    font-weight: 470;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+}
+
+.work-title {
+    font-size: clamp(1.25rem, 2vw, 1.75rem);
+    font-weight: 560;
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+}
+
+.work-meta {
+    font-size: 0.85rem;
+    font-weight: 470;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
 /* ---------- 전시 리스트 ---------- */
 .exhibition-list {
     list-style: none;
@@ -901,6 +977,25 @@ html.js .scroll-indicator {
     .footer-links {
         flex-direction: column;
         align-items: flex-start;
+    }
+
+    /* 폰 세로 화면: 16:9는 너무 낮아 존재감이 약함 → 정사각으로 가운데 잘라 보여 줌 */
+    .work-media {
+        aspect-ratio: 1 / 1;
+    }
+
+    .works-head {
+        margin-bottom: 36px;
+    }
+
+    .work-caption {
+        grid-template-columns: auto 1fr;
+        gap: 0.4rem 1rem;
+        padding-top: 20px;
+    }
+
+    .work-meta {
+        grid-column: 2;
     }
 
     .modal-content {

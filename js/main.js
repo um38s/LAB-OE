@@ -313,6 +313,86 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // =====================================================
+    // 대표작: 리스트 폭 → 화면 가득 열림(스크롤 연동) + 보일 때만 영상 재생
+    // =====================================================
+    const works = gsap.utils.toArray('.work');
+    if (works.length) {
+        // 처음 잘림 좌우 = 리스트 칼럼 가장자리 (컨테이너 바깥 여백 + 거터)
+        const sideInset = () => {
+            const gutter = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--gutter')) || 24;
+            return Math.max(gutter, (document.documentElement.clientWidth - 1400) / 2 + gutter);
+        };
+
+        if (!reducedMotion) {
+            works.forEach((work) => {
+                const media = work.querySelector('.work-media');
+                const video = work.querySelector('.work-video');
+                const caption = work.querySelector('.work-caption');
+                gsap.fromTo(media,
+                    { clipPath: () => `inset(7% ${sideInset()}px 7% ${sideInset()}px round 6px)` },
+                    {
+                        clipPath: 'inset(0% 0px 0% 0px round 0px)',
+                        ease: 'none',
+                        scrollTrigger: { trigger: media, start: 'top 90%', end: 'center 60%', scrub: 0.6, invalidateOnRefresh: true },
+                    });
+                // 열리는 동안 영상은 살짝 줌아웃 — 틀과 내용이 다른 속도로 움직이는 깊이감
+                if (video) {
+                    gsap.fromTo(video, { scale: 1.18 }, {
+                        scale: 1,
+                        ease: 'none',
+                        scrollTrigger: { trigger: media, start: 'top bottom', end: 'bottom top', scrub: 0.6 },
+                    });
+                }
+                if (caption) {
+                    gsap.from(caption, {
+                        y: 20,
+                        opacity: 0,
+                        duration: 0.8,
+                        ease: 'power3.out',
+                        scrollTrigger: { trigger: caption, start: 'top 92%', once: true },
+                    });
+                }
+            });
+        }
+
+        // 모션 최소화 설정이면 자동 재생 없이 포스터만 (영상 파일도 받지 않음)
+        const videos = works.map((w) => w.querySelector('.work-video')).filter(Boolean);
+        if (!reducedMotion && 'IntersectionObserver' in window) {
+            const loadVideo = (v) => {
+                if (!v.getAttribute('src') && v.dataset.src) {
+                    v.preload = 'auto';
+                    v.src = v.dataset.src;
+                }
+            };
+            // 화면 600px 앞에서 미리 받기 — 멀리 있는 영상은 받지 않음
+            const loader = new IntersectionObserver((entries) => {
+                entries.forEach((e) => {
+                    if (!e.isIntersecting) return;
+                    loadVideo(e.target);
+                    loader.unobserve(e.target);
+                });
+            }, { rootMargin: '600px 0px' });
+            // 보일 때만 재생, 벗어나면 정지 (배터리·GPU 절약)
+            const player = new IntersectionObserver((entries) => {
+                entries.forEach((e) => {
+                    const v = e.target;
+                    if (e.isIntersecting) {
+                        loadVideo(v);
+                        const p = v.play();
+                        if (p) p.catch(() => {});
+                    } else {
+                        v.pause();
+                    }
+                });
+            }, { threshold: 0.15 });
+            videos.forEach((v) => {
+                loader.observe(v);
+                player.observe(v);
+            });
+        }
+    }
+
+    // =====================================================
     // 씬 스냅: 히어로 ↔ 철학(스테이트먼트 포함) 두 장면만 스냅.
     // 철학 장면을 지나 리스트 구간부터는 자유 스크롤.
     // =====================================================
@@ -715,6 +795,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     // 같은 행 두 번째 탭: 모달
                     clearArmed();
                 }
+                openModalFromLink(link);
+            });
+        });
+
+        // 대표작 영상 클릭: 바로 모달 (리스트와 같은 이미지·유튜브 링크)
+        document.querySelectorAll('.work-link').forEach((link) => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
                 openModalFromLink(link);
             });
         });
