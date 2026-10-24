@@ -347,6 +347,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // =====================================================
     // 스크롤 진입 애니메이션 (명세 4)
     // =====================================================
+    // 히어로 아래쪽이 헤더 높이에 닿으면 상단 반투명 띠 표시 (첫 화면에선 띠 없이 깔끔하게)
+    ScrollTrigger.create({
+        trigger: '.hero',
+        start: 'bottom 96px',
+        end: 'max',
+        toggleClass: { targets: document.documentElement, className: 'is-scrolled' },
+    });
+
     if (reducedMotion) drawAllTitles();
     if (!reducedMotion) {
         // 히어로를 벗어날 때(스크롤에 묶임, 애플 제품 페이지식 물러남): 다음 장면이 올라오는 동안

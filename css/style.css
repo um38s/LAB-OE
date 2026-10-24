@@ -130,6 +130,30 @@ html:not(.js) #intro-overlay {
     mix-blend-mode: difference;
 }
 
+/* 상단 반투명 띠 — 히어로를 지나면(JS가 html.is-scrolled) 나타남.
+   배경색이 살짝 비치는 흐림 + 아래 경계는 선 대신 마스크로 부드럽게 사라짐.
+   헤더(차이 합성) 바로 아래 층이라 헤더 글자는 이 띠 위에서 반전되어 항상 읽힘 */
+.header-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 104px;
+    z-index: 199;
+    pointer-events: none;
+    background-color: color-mix(in srgb, var(--bg) 72%, transparent);
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.4s ease, background-color 0.5s ease;
+}
+
+html.is-scrolled .header-backdrop {
+    opacity: 1;
+}
+
 .site-header > * {
     pointer-events: auto;
 }
@@ -1083,6 +1107,10 @@ html.js .section-title:not(.is-drawn)::after {
         padding: 18px var(--gutter);
     }
 
+    .header-backdrop {
+        height: 88px; /* 폰 헤더(위아래 18px)에 맞춰 낮춤 */
+    }
+
     .hero-title {
         font-size: clamp(3.2rem, 20vw, 8rem);
     }
@@ -1181,7 +1209,8 @@ html.theme-switching *::after {
 
 /* ---------- 접근성: 투명도 최소화 — 머티리얼을 불투명하게 ---------- */
 @media (prefers-reduced-transparency: reduce) {
-    .modal {
+    .modal,
+    .header-backdrop {
         background-color: var(--bg);
         backdrop-filter: none;
         -webkit-backdrop-filter: none;
