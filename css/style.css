@@ -534,6 +534,12 @@ html.js .section-title:not(.is-drawn)::after {
     margin-top: 0.2rem;
 }
 
+/* 소개글 줄바꿈: '[빛]을'처럼 괄호 뒤 조사가 다음 줄로 떨어지지 않게, 강제 줄바꿈은 넓은 화면에서만 */
+.nobr { white-space: nowrap; }
+@media (max-width: 768px) {
+    .br-desk { display: none; }
+}
+
 .highlight {
     font-weight: 650;
     color: var(--text);
