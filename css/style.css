@@ -640,7 +640,8 @@ html.js .section-title:not(.is-drawn)::after {
 
 /* ---------- 아이덴티티 스테이트먼트 (Exhibition Design ✕ Media Art) ---------- */
 .section-statement {
-    margin-top: calc(var(--section-gap) * -0.35); /* 철학 섹션 쪽으로 약간 끌어올림 */
+    /* 원 아래 → 이 문구 간격 = 소개글 → 원 위 간격(4rem)과 같게: 위 섹션의 아래 여백(section-gap)을 빼고 4rem만 남김 */
+    margin-top: calc(4rem - var(--section-gap));
 }
 
 .statement-line {
