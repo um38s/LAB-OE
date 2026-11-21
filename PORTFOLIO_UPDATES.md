@@ -5,6 +5,7 @@
 | DESIGN PHILOSOPHY 소개글 | 미디어 아트만 드러나던 문구에 박물관 전시 공간 기획·디자인을 더함(프로젝트 이름 나열은 하지 않음 — 사용자). '일상적 무심한' → '일상의 무심한', 끝맺음 '미디어 아트 그룹 LAB OE' → '경험을 만드는 LAB OE 스튜디오' |
 | 줄바꿈 | '[사물] + [빛]을' 한 덩어리(`.nobr`), 첫 줄 끝 강제 줄바꿈은 769px 이상에서만(`.br-desk`) — 폰에서 '[빛]' / '을'로 갈라지던 것 해결. 캡처 `previews/intro_desk.png`·`intro_mob.png` |
 | 원 위아래 간격 | 원 아래 → 'Exhibition Design ✕ Media Art' 간격을 소개글 → 원 위 간격과 같게(`.section-statement` margin-top = 4rem − section-gap). 글자 잉크 기준 측정: 1440·1920px 73/74, 1000px 73/70, 폰 72/69 (이전 1440px 73/114). 캡처 `previews/circle_gap_*.png` |
+| 최적화 점검 | 오늘 바뀐 크기(저장소 기준) HTML +161·+175 B, CSS +343·+555 B, JS 변경 없음 → 실행 부담 늘 곳 없어 코드 그대로(이득 없음). 확인 도구를 `tools/`로: `check_section_gaps.py`(원 위아래 간격, 글자 잉크 기준, 4개 화면) · `shot_section.py`(섹션 데스크톱·폰 캡처) |
 | ver01 | 보존본에도 같은 문구 적용(사용자 요청). ver01은 글자가 커서 폰에서 끝 덩어리가 통째로 밀리던 것 → 폰에선 이어서 흐르게, 'LAB OE' 양옆은 띄어쓰기로. CSS `?v=20261121a` 처음 붙임. 캡처 `previews/ver01_intro_*.png` |
 
 # Portfolio Update Log — 2026-10-24 (리뉴얼 2차: 대표작 영상 + 애플식 인터랙션)
