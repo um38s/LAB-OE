@@ -229,6 +229,15 @@ section {
     margin-top: 0.3rem;
 }
 
+/* 소개글 줄바꿈: '[빛]을'이 갈라지지 않게, 강제 줄바꿈은 넓은 화면에서만 (2026-11-21 루트와 같게) */
+.nobr { white-space: nowrap; }
+.philosophy-highlight-wrapper .highlight { padding: 0; } /* 양옆 간격은 띄어쓰기로 — 줄 맨 앞이면 들여쓰기 없음 */
+@media (max-width: 768px) {
+    .br-desk { display: none; }
+    /* 글자가 커서 끝 덩어리가 통째로 다음 줄로 밀리며 앞줄이 짧게 끊기던 것 → 이어서 흐르게 */
+    .philosophy-highlight-wrapper { display: inline; }
+}
+
 .highlight {
     color: var(--point-color);
     font-weight: 700;
